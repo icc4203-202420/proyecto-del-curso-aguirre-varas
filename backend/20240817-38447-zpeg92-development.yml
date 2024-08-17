@@ -1,0 +1,5 @@
+# aws:
+#   access_key_id: 123
+#   secret_access_key: 345
+
+devise_jwt_secret_key: 604fc7e839ca621269f404d7b639f6f1b1086942b0d79cb6d57cc1e676c298378f910d3fec685d2ea052d3e15602fb718de5f6361ce0a539075be9850d09adcd
