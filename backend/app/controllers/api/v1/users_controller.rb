@@ -3,11 +3,11 @@ class API::V1::UsersController < ApplicationController
   before_action :set_user, only: [:show, :update]  
   
   def index
-    @users = User.includes(:reviews, :address).all   
+    @users = User.includes(:reviews, :address).all
   end
 
   def show
-  
+    render json: @user, status: :ok
   end
 
   def create
@@ -28,7 +28,7 @@ class API::V1::UsersController < ApplicationController
     end
   end
 
-  private
+  private 
 
   def set_user
     @user = User.find(params[:id])

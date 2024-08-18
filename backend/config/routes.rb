@@ -26,6 +26,7 @@ Rails.application.routes.draw do
       resources :events
       resources :users do
         resources :reviews, only: [:index]
+        resources :friendships, only: [:index, :show, :create, :destroy]
       end
       
       resources :reviews, only: [:index, :show, :create, :update, :destroy]
