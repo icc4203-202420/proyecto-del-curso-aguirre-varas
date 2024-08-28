@@ -15,12 +15,21 @@ export default function NavBar({ value, onChange }) {
         bottom: 0,
         left: 0,
         right: 0,
+        backgroundColor: "#452103",
       }}
     >
-      <BottomNavigation showLabels value={value} onChange={onChange}>
-        <BottomNavigationAction label="Home" icon={<HomeIcon />} />
-        <BottomNavigationAction label="Map" icon={<MapIcon />} />
-        <BottomNavigationAction label="Account" icon={<AccountCircleIcon />} />
+      <BottomNavigation
+        showLabels
+        value={value}
+        onChange={onChange}
+        sx={{
+          bgcolor: "#452103",
+          color: "#FFD597",
+        }}
+      >
+        <BottomNavigationAction label="Home" icon={<HomeIcon />} sx={{ color: "#FFD597" }} />
+        <BottomNavigationAction label="Map" icon={<MapIcon />} sx={{ color: "#FFD597" }} />
+        <BottomNavigationAction label="Account" icon={<AccountCircleIcon />} sx={{ color: "#FFD597" }} />
       </BottomNavigation>
     </Paper>
   );
