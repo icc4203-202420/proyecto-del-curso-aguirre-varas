@@ -12,14 +12,23 @@ class API::V1::EventsController < ApplicationController
     else
       @events = Event.all
     end
-    render json: { events: @events }, status: :ok
+    json_response = []
+    for event in @events
+      if event.flyer.attached?
+        json_event = event.as_json.merge({ 
+          image_url: url_for(event.flyer)})
+      else
+        json_event =   event.as_json
+      end
+      json_response.push(json_event)
+    end
+    render json: { events: json_response }, status: :ok
   end
 
   def show
-    if @event.image.attached?
+    if @event.flyer.attached?
       render json: @event.as_json.merge({ 
-        image_url: url_for(@event.image), 
-        thumbnail_url: url_for(@event.thumbnail) }),
+        image_url: url_for(@event.flyer)}),
         status: :ok
     else
       render json: { event: @event.as_json }, status: :ok
