@@ -19,6 +19,8 @@ const SearchContainer = ({ searchQuery }) => {
         return <Beers searchQuery={searchQuery} />;
       case 1:
         return <Bars searchQuery={searchQuery} />;
+      case 2:
+        return <h1>Search for user handle</h1>;
       default:
         return <Beers searchQuery={searchQuery} />;
     }
@@ -36,7 +38,7 @@ const SearchContainer = ({ searchQuery }) => {
           >
             <Tab label="Beers" id="0" sx={{ color: "#BB6B00" }} />
             <Tab label="Bars" id="1" sx={{ color: "#BB6B00" }} />
-            <Tab label="Item Three" id="3" sx={{ color: "#BB6B00" }} />
+            <Tab label="Users" id="2" sx={{ color: "#BB6B00" }} />
           </Tabs>
         </Box>
         {/*
