@@ -75,7 +75,7 @@ const Home = () => {
               key={event.id}
               name={event.name}
               date={event.date}
-              image={event.image || null}
+              image={event.image_url || null}
               description={event.description}
               sx={{ marginBottom: "16px" }} // Add margin between EventCard components
             />
