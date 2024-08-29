@@ -8,24 +8,25 @@ import "swiper/css/pagination";
 const NewsFromFriends = () => {
   
   return (
-    <Box>
+    <Box >
       <Swiper
         spaceBetween={50}
         width={500}
         slidesPerView={3}
         onSlideChange={() => console.log("slide change")}
         onSwiper={(swiper) => console.log(swiper)}
+        
       >
-        <SwiperSlide>
+        <SwiperSlide >
           <Card>
-            <CardContent>
+            <CardContent sx={{backgroundColor: '#bb6b00'}}>
               <Typography>Reseña de un amigo 1</Typography>
             </CardContent>
           </Card>
         </SwiperSlide>
         <SwiperSlide>
           <Card>
-            <CardContent>
+            <CardContent sx={{backgroundColor: '#bb6b00'}}>
               <Typography>Reseña de un amigo 2</Typography>
             </CardContent>
           </Card>

@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Box } from "@mui/material";
-
+import { palette } from "../palette"; 
 import Tabs from "@mui/material/Tabs";
 import Tab from "@mui/material/Tab";
-
 import Beers from "./Beers/Beers";
 import Bars from "./Bars/Bars";
+import Users from "./Users/Users"
+import Events from "./Events/Events"; 
 
 const SearchContainer = ({ searchQuery }) => {
-  const [filter, setFilter] = useState(0); // Estado para manejar el filtro
+  const [filter, setFilter] = useState(0);
+
   const handleFilterChange = (event, newValue) => {
     setFilter(newValue);
   };
@@ -20,7 +22,9 @@ const SearchContainer = ({ searchQuery }) => {
       case 1:
         return <Bars searchQuery={searchQuery} />;
       case 2:
-        return <h1>Search for user handle</h1>;
+        return <Users searchQuery={searchQuery}/>;
+      case 3:
+        return <Events searchQuery={searchQuery} />; 
       default:
         return <Beers searchQuery={searchQuery} />;
     }
@@ -28,7 +32,7 @@ const SearchContainer = ({ searchQuery }) => {
 
   return (
     <>
-      <Box sx={{ marginTop: "64px", padding: "16px", color: "#BB6B00" }}>
+      <Box sx={{ marginTop: "64px", padding: "16px", color: palette.lager }}>
         <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
           <Tabs
             value={filter}
@@ -36,37 +40,12 @@ const SearchContainer = ({ searchQuery }) => {
             aria-label="basic tabs example"
             sx={{ marginBottom: "6px" }}
           >
-            <Tab label="Beers" id="0" sx={{ color: "#BB6B00" }} />
-            <Tab label="Bars" id="1" sx={{ color: "#BB6B00" }} />
-            <Tab label="Users" id="2" sx={{ color: "#BB6B00" }} />
+            <Tab label="Beers" id="0" sx={{ color: palette.lager }} />
+            <Tab label="Bars" id="1" sx={{ color: palette.lager }} />
+            <Tab label="Users" id="2" sx={{ color: palette.lager }} />
+            <Tab label="Events" id="3" sx={{ color: palette.lager }} /> 
           </Tabs>
         </Box>
-        {/*
-        <FormControl
-          fullWidth
-          variant="outlined"
-          sx={{ marginBottom: 2, color: "#BB6B00" }}
-        >
-          <InputLabel sx={{ color: "#BB6B00" }}>Filter</InputLabel>
-          <Select
-            value={filter}
-            onChange={handleFilterChange}
-            label="Filter"
-            sx={{ color: "#BB6B00" }}
-          >
-            <MenuItem sx={{ color: "#BB6B00" }} value="beers">
-              Beers
-            </MenuItem>
-            <MenuItem
-              sx={{ backgroundColor: "#210f04", color: "#BB6B00" }}
-              value="bars"
-            >
-              Bars
-            </MenuItem>
-            
-          </Select>
-        </FormControl>
-        */}
         {renderFilteredContent()}
       </Box>
     </>

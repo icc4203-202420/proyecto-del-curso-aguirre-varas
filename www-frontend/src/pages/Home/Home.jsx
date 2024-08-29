@@ -66,7 +66,7 @@ const Home = () => {
           justifyContent: "center",
           paddingLeft: 2,
           flex: 1,
-          marginTop: "16px", // Add margin between child elements
+          marginTop: "16px", 
         }}
       >
         {events &&
@@ -77,7 +77,7 @@ const Home = () => {
               date={event.date}
               image={event.image_url || null}
               description={event.description}
-              sx={{ marginBottom: "16px" }} // Add margin between EventCard components
+              sx={{ marginBottom: "16px" }}
             />
           ))}
       </Box>
