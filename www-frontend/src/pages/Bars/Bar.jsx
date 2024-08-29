@@ -5,12 +5,12 @@ import {
   CardMedia,
   Typography,
   Box,
-  Rating,
   CardActionArea,
 } from "@mui/material";
-import Img1 from "../../assets/beer_image.jpeg";
 
-const BeerCard = ({ name, style, rating, onClick }) => {
+import Img1 from "../../assets/bar_image.jpeg";
+
+const BarCard = ({ name, onClick }) => {
   return (
     <Card
       sx={{
@@ -43,22 +43,6 @@ const BeerCard = ({ name, style, rating, onClick }) => {
             <Typography component="div" variant="h6" sx={{ fontSize: 20 }}>
               {name}
             </Typography>
-            <Typography
-              variant="subtitle1"
-              color="#b1977a"
-              component="div"
-              sx={{ fontSize: 16 }}
-            >
-              {style}
-            </Typography>
-            <Box sx={{ display: "flex", alignItems: "center", marginTop: 1 }}>
-              <Rating
-                value={rating}
-                precision={0.5}
-                readOnly
-                sx={{ color: "#b1977a" }}
-              />
-            </Box>
           </CardContent>
         </Box>
       </CardActionArea>
@@ -66,11 +50,9 @@ const BeerCard = ({ name, style, rating, onClick }) => {
   );
 };
 
-BeerCard.propTypes = {
+BarCard.propTypes = {
   name: PropTypes.string.isRequired,
-  style: PropTypes.string.isRequired,
-  rating: PropTypes.number,
   onClick: PropTypes.func, // Añadir prop para el clic
 };
 
-export default BeerCard;
+export default BarCard;

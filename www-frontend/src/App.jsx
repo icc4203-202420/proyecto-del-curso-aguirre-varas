@@ -8,6 +8,7 @@ import Map from "./pages/Map";
 import Profile from "./pages/Profile";
 import Beers from "./pages/Beers/Beers";
 import "./App.css"; // Importa el archivo de estilos globales
+import SearchContainer from "./pages/SearchContainer";
 
 function App() {
   const [currentView, setCurrentView] = useState(0);
@@ -30,7 +31,7 @@ function App() {
       case 0:
         return <Home />;
       case 3:
-        return <Beers searchQuery={searchQuery} />;  // Pasar búsqueda a Beers
+        return <SearchContainer searchQuery={searchQuery}></SearchContainer>; // Pasar búsqueda a Beers
       case 1:
         return <Map />;
       case 2:
