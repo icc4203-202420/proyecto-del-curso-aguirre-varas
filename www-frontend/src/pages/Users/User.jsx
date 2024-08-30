@@ -1,6 +1,12 @@
 // User.jsx
 import PropTypes from "prop-types";
-import { Card, CardContent, Typography, Box, CardActionArea } from "@mui/material";
+import {
+  Card,
+  CardContent,
+  Typography,
+  Box,
+  CardActionArea,
+} from "@mui/material";
 
 const UserCard = ({ firstName, lastName, age, handle, onClick }) => {
   return (
@@ -29,10 +35,20 @@ const UserCard = ({ firstName, lastName, age, handle, onClick }) => {
             <Typography component="div" variant="h6" sx={{ fontSize: 20 }}>
               {firstName} {lastName}
             </Typography>
-            <Typography variant="subtitle1" color="#b1977a" component="div" sx={{ fontSize: 16 }}>
+            <Typography
+              variant="subtitle1"
+              color="#b1977a"
+              component="div"
+              sx={{ fontSize: 16 }}
+            >
               Age: {age}
             </Typography>
-            <Typography variant="subtitle2" color="#b1977a" component="div" sx={{ fontSize: 16 }}>
+            <Typography
+              variant="subtitle2"
+              color="#b1977a"
+              component="div"
+              sx={{ fontSize: 16 }}
+            >
               Handle: {handle}
             </Typography>
           </CardContent>
@@ -45,7 +61,7 @@ const UserCard = ({ firstName, lastName, age, handle, onClick }) => {
 UserCard.propTypes = {
   firstName: PropTypes.string.isRequired,
   lastName: PropTypes.string.isRequired,
-  age: PropTypes.number.isRequired,
+  age: PropTypes.number,
   handle: PropTypes.string.isRequired,
   onClick: PropTypes.func,
 };

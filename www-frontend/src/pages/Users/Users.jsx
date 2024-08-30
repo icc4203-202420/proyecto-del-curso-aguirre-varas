@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Stack } from "@mui/material";
-import UserCard from "./User";  
+import UserCard from "./User";
 import UserDetail from "./UserDetail";
 import axios from "axios";
 
@@ -9,37 +9,33 @@ const Users = ({ searchQuery }) => {
   const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
-    fetchUsers();  
+    fetchUsers();
   }, []);
 
   const fetchUsers = async () => {
     const path = import.meta.env.VITE_BACKEND_URL;
-    const fetchedUsers = [];
 
-    for (let i = 1; i <= 50; i++) { // RENATO aca se llama a 50 nomas porseacaso pq no pude con todos ojo
-      try {
-        const response = await axios.get(`${path}/users/${i}`);
-        fetchedUsers.push(response.data);  
-      } catch (error) {
-        console.error(`Error fetching user with ID ${i}:`, error);
-      }
+    try {
+      const response = await axios.get(`${path}/users/`);
+      setUsers(response.data);
+    } catch (error) {
+      console.error(error);
     }
-
-    setUsers(fetchedUsers); 
   };
 
-  const filteredUsers = users.filter((user) =>
-    user.first_name.toLowerCase().includes(searchQuery.toLowerCase()) || 
-    user.last_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    user.handle.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredUsers = users.filter(
+    (user) =>
+      user.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.last_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      user.handle.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   const handleUserClick = (user) => {
-    setSelectedUser(user);  
+    setSelectedUser(user);
   };
 
   const handleBackClick = () => {
-    setSelectedUser(null); 
+    setSelectedUser(null);
   };
 
   return (
