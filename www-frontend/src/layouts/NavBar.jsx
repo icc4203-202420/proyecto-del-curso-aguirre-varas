@@ -7,6 +7,8 @@ import MapIcon from "@mui/icons-material/Map";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { Paper } from "@mui/material";
 
+import { Link } from "react-router-dom";
+
 export default function NavBar({ value, onChange }) {
   return (
     <Paper
@@ -27,9 +29,30 @@ export default function NavBar({ value, onChange }) {
           color: "#FFD597",
         }}
       >
-        <BottomNavigationAction label="Home" icon={<HomeIcon />} sx={{ color: "#FFD597" }} />
-        <BottomNavigationAction label="Map" icon={<MapIcon />} sx={{ color: "#FFD597" }} />
-        <BottomNavigationAction label="Account" icon={<AccountCircleIcon />} sx={{ color: "#FFD597" }} />
+        <BottomNavigationAction
+          component={Link}
+          to="/"
+          value={0}
+          label="Home"
+          icon={<HomeIcon />}
+          sx={{ color: "#FFD597" }}
+        />
+        <BottomNavigationAction
+          component={Link}
+          value={1}
+          to="/map"
+          label="Map"
+          icon={<MapIcon />}
+          sx={{ color: "#FFD597" }}
+        />
+        <BottomNavigationAction
+          component={Link}
+          value={2}
+          to="/account"
+          label="Account"
+          icon={<AccountCircleIcon />}
+          sx={{ color: "#FFD597" }}
+        />
       </BottomNavigation>
     </Paper>
   );

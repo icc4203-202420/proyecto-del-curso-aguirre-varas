@@ -1,9 +1,10 @@
-
 import React from "react";
 import { AppBar, Toolbar, IconButton, InputBase } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import MenuIcon from "@mui/icons-material/Menu";
 import { styled, alpha } from "@mui/material/styles";
+
+import { Link } from "react-router-dom";
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -43,19 +44,24 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
-const SearchAppBar = ({ onSearchClick, searchQuery, onSearchChange }) => { 
+const SearchAppBar = ({ onSearchClick, searchQuery, onSearchChange }) => {
   return (
     <AppBar position="fixed" sx={{ backgroundColor: "#4e2b0e" }}>
       <Toolbar>
         <Search onClick={onSearchClick}>
-          <IconButton size="large" edge="start" color="inherit" aria-label="search">
+          <IconButton
+            size="large"
+            edge="start"
+            color="inherit"
+            aria-label="search"
+          >
             <SearchIcon />
           </IconButton>
           <StyledInputBase
             placeholder="Search…"
             inputProps={{ "aria-label": "search" }}
-            value={searchQuery} 
-            onChange={onSearchChange} 
+            value={searchQuery}
+            onChange={onSearchChange}
           />
         </Search>
         <IconButton
