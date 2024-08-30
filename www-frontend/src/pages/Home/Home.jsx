@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Box, Typography, Avatar, Paper, TextField } from "@mui/material";
+import { Box, Typography, Avatar, Paper } from "@mui/material";
 import NewsFromFriends from "./NewsFromFriends";
 import EventCard from "../globalComponents/EventCard";
 import axios from "axios";
@@ -66,7 +66,7 @@ const Home = () => {
           justifyContent: "center",
           paddingLeft: 2,
           flex: 1,
-          marginTop: "16px", 
+          marginTop: "16px",
         }}
       >
         {events &&
