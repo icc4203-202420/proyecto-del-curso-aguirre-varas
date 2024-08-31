@@ -33,24 +33,24 @@ El diseño debe contener las pantallas de interfaz que cumplan con la siguiente 
 
 En la API del backend, se pide agregar los siguientes controladores en esta entrega:
 
-* [1 punto] `EventsController`: Se deben implementar los endpoints de `GET /api/v1/events/:id` (muestra evento), `POST /api/v1/events` (crea evento), `PATCH /api/v1/events` (actualiza evento), `DELETE /api/v1/events/:id` (elimina evento). Notar que los eventos permiten usar una imagen de flyer. Deben el procesamiento de la imagen, en forma similar a cómo opera `BeerController` y `BarsController`. Añadir también requisitos de autenticación para operaciones de creación, actualización y eliminación de eventos.
-* [1 punto] `UsersController`: Se deben implementar los endpoints de `GET /api/v1/users/:id/friendships` (permite obtener información de todas las amistades del usuario con `user_id`), es decir, retorna una lista con todos los `user` que son amigos según el modelo `Frienship`. Además, se debe implementar `POST /api/v1/users/:id/friendships`, para agregar una nueva amistad (ver modelo `Friendship` y tabla en `db/schema.rb`). Añadir requisito de autenticación para todas estas operaciones.
+- [1 punto] `EventsController`: Se deben implementar los endpoints de `GET /api/v1/events/:id` (muestra evento), `POST /api/v1/events` (crea evento), `PATCH /api/v1/events` (actualiza evento), `DELETE /api/v1/events/:id` (elimina evento). Notar que los eventos permiten usar una imagen de flyer. Deben el procesamiento de la imagen, en forma similar a cómo opera `BeerController` y `BarsController`. Añadir también requisitos de autenticación para operaciones de creación, actualización y eliminación de eventos.
+- [1 punto] `UsersController`: Se deben implementar los endpoints de `GET /api/v1/users/:id/friendships` (permite obtener información de todas las amistades del usuario con `user_id`), es decir, retorna una lista con todos los `user` que son amigos según el modelo `Frienship`. Además, se debe implementar `POST /api/v1/users/:id/friendships`, para agregar una nueva amistad (ver modelo `Friendship` y tabla en `db/schema.rb`). Añadir requisito de autenticación para todas estas operaciones.
 
 ## Evaluación
 
 Cada requisito será evaluado en escala 1-5. Estos puntos se traducen a ponderadores:
 
-* 1 -> 0.0: No entregado
-* 2 -> 0.25: Esbozo de solucion
-* 3 -> 0.5: Logro intermedio
-* 4 -> 0.75: Alto logro con deficiencias o errores menores
-* 5 -> 0.75: Implementación completa y correcta
+- 1 -> 0.0: No entregado
+- 2 -> 0.25: Esbozo de solucion
+- 3 -> 0.5: Logro intermedio
+- 4 -> 0.75: Alto logro con deficiencias o errores menores
+- 5 -> 1.00: Implementación completa y correcta
 
 Los ponderadores aplican al puntaje máximo del ítem. La nota en escala 1-7 se calcula como la suma de puntajes parciales ponderados más el punto base.
 
 ## Forma y fecha de entrega
 
-Con respecto al diseño de interfaz de usuario, se debe proveer el archivo fuente de Figma o de Axure RP para su evaluación. Además, es conveniente exportar el diseño completo a PDF con estas herramientas. Los archivos de diseño deben ser entregados en la misma carpeta en donde está este archivo, con nombre 'grupoxx.abc', en donde xx es el número del grupo asignado por lista (publicada en Canvas), y .abc es la extensión que corresponda a la herramienta usada (Figma o Axure). 
+Con respecto al diseño de interfaz de usuario, se debe proveer el archivo fuente de Figma o de Axure RP para su evaluación. Además, es conveniente exportar el diseño completo a PDF con estas herramientas. Los archivos de diseño deben ser entregados en la misma carpeta en donde está este archivo, con nombre 'grupoxx.abc', en donde xx es el número del grupo asignado por lista (publicada en Canvas), y .abc es la extensión que corresponda a la herramienta usada (Figma o Axure).
 
 El código con la implementación de los controladores debe ser entregado en este repositorio. Para la evaluación, se debe realizar un pull request que incluya al ayudante de proyecto asignado.
 

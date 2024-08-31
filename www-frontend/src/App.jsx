@@ -1,35 +1,97 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { useEffect, useState } from "react";
+import CssBaseline from "@mui/material/CssBaseline";
+import Container from "@mui/material/Container";
+import SearchAppBar from "./layouts/SearchBar";
+import NavBar from "./layouts/NavBar";
+import Home from "./pages/Home/Home";
+import Map from "./pages/Map";
+import Profile from "./pages/Profile";
+import "./App.css"; // Importa el archivo de estilos globales
+import SearchContainer from "./pages/SearchContainer";
+
+import Beers from "./pages/Beers/Beers";
+import Bars from "./pages/Bars/Bars";
+import Users from "./pages/Users/Users";
+import Events from "./pages/Events/Events";
+
+import { Routes, Route, Link, useNavigate } from "react-router-dom";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [currentView, setCurrentView] = useState(0);
+  const [searchQuery, setSearchQuery] = useState(""); // Nuevo estado de búsqueda
 
+  const navigate = useNavigate();
+
+  const handleNavBarChange = (event, newValue) => {
+    setCurrentView(newValue);
+  };
+
+  const handleSearchClick = () => {
+    if (currentView !== 3) {
+      navigate("/search");
+      setCurrentView(3);
+    }
+  };
+
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value); // Actualizar búsqueda global
+  };
+  /*
+    const renderContent = () => {
+      switch (currentView) {
+        case 0:
+          return <Home />;
+        case 3:
+          return <SearchContainer searchQuery={searchQuery}></SearchContainer>; // Pasar búsqueda a Beers
+        case 1:
+          return <Map />;
+        case 2:
+          return <Profile />;
+        default:
+          return <Home />;
+      }
+    };
+  */
   return (
     <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+      <CssBaseline />
+      <div className="container">
+        <SearchAppBar
+          onSearchClick={handleSearchClick}
+          searchQuery={searchQuery}
+          onSearchChange={handleSearchChange}
+        />
+        <Routes>
+          <Route index path="/" element={<Home />} />
+          <Route path="/map" element={<Map />} />
+          <Route path="/account" element={<Profile />} />
+          <Route
+            path="/search"
+            element={<SearchContainer searchQuery={searchQuery} />}
+          >
+            <Route>
+              <Route index element={<Beers searchQuery={searchQuery} />} />
+              <Route
+                index
+                path="beers"
+                element={<Beers searchQuery={searchQuery} />}
+              />
+              <Route path="bars" element={<Bars searchQuery={searchQuery} />} />
+              <Route
+                path="users"
+                element={<Users searchQuery={searchQuery} />}
+              />
+              <Route
+                path="events"
+                element={<Events searchQuery={searchQuery} />}
+              />
+            </Route>
+          </Route>
+        </Routes>
+        <NavBar value={currentView} onChange={handleNavBarChange} />
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
