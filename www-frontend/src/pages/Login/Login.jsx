@@ -16,7 +16,7 @@ import InputLabel from "@mui/material/InputLabel";
 import IconButton from "@mui/material/IconButton";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-
+import { Link } from "react-router-dom";
 import useUser from "../../hooks/useUser";
 import { useNavigate } from "react-router-dom";
 
@@ -36,7 +36,7 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [showPassword, setShowPassword] = React.useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -47,7 +47,6 @@ const Login = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     login(email, password);
-    console.log("Submit");
   };
 
   useEffect(() => {
@@ -140,6 +139,9 @@ const Login = () => {
             {isLoading && <h2>Loading...</h2>}
             {isError && <h2>{errorMsg}</h2>}
           </FormControl>
+          <Button component={Link} to="/signup">
+            create an account
+          </Button>
         </Box>
       </Box>
     </>

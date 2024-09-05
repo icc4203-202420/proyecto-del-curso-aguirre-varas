@@ -10,6 +10,7 @@ import "./App.css"; // Importa el archivo de estilos globales
 import SearchContainer from "./pages/SearchContainer";
 
 import Login from "./pages/Login/Login";
+import Signup from "./pages/Login/Signup";
 
 import Beers from "./pages/Beers/Beers";
 import Bars from "./pages/Bars/Bars";
@@ -58,6 +59,7 @@ function App() {
           <Routes>
             <Route index path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<Signup />} />
             <Route path="/map" element={<Map />} />
             <Route path="/account" element={<Profile />} />
             <Route
