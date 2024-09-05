@@ -9,6 +9,8 @@ import Profile from "./pages/Profile";
 import "./App.css"; // Importa el archivo de estilos globales
 import SearchContainer from "./pages/SearchContainer";
 
+import Login from "./pages/Login/Login";
+
 import Beers from "./pages/Beers/Beers";
 import Bars from "./pages/Bars/Bars";
 import Users from "./pages/Users/Users";
@@ -16,7 +18,12 @@ import Events from "./pages/Events/Events";
 
 import { Routes, Route, Link, useNavigate } from "react-router-dom";
 
+import { UserContextProvider } from "./context/UserContext";
+import useUser from "./hooks/useUser";
+
 function App() {
+  const { isAuthenticated } = useUser();
+
   const [currentView, setCurrentView] = useState(0);
   const [searchQuery, setSearchQuery] = useState(""); // Nuevo estado de búsqueda
 
@@ -36,60 +43,52 @@ function App() {
   const handleSearchChange = (event) => {
     setSearchQuery(event.target.value); // Actualizar búsqueda global
   };
-  /*
-    const renderContent = () => {
-      switch (currentView) {
-        case 0:
-          return <Home />;
-        case 3:
-          return <SearchContainer searchQuery={searchQuery}></SearchContainer>; // Pasar búsqueda a Beers
-        case 1:
-          return <Map />;
-        case 2:
-          return <Profile />;
-        default:
-          return <Home />;
-      }
-    };
-  */
+
   return (
     <>
-      <CssBaseline />
-      <div className="container">
-        <SearchAppBar
-          onSearchClick={handleSearchClick}
-          searchQuery={searchQuery}
-          onSearchChange={handleSearchChange}
-        />
-        <Routes>
-          <Route index path="/" element={<Home />} />
-          <Route path="/map" element={<Map />} />
-          <Route path="/account" element={<Profile />} />
-          <Route
-            path="/search"
-            element={<SearchContainer searchQuery={searchQuery} />}
-          >
-            <Route>
-              <Route index element={<Beers searchQuery={searchQuery} />} />
-              <Route
-                index
-                path="beers"
-                element={<Beers searchQuery={searchQuery} />}
-              />
-              <Route path="bars" element={<Bars searchQuery={searchQuery} />} />
-              <Route
-                path="users"
-                element={<Users searchQuery={searchQuery} />}
-              />
-              <Route
-                path="events"
-                element={<Events searchQuery={searchQuery} />}
-              />
+      <UserContextProvider>
+        <CssBaseline />
+
+        <div className="container">
+          <SearchAppBar
+            onSearchClick={handleSearchClick}
+            searchQuery={searchQuery}
+            onSearchChange={handleSearchChange}
+          />
+          <Routes>
+            <Route index path="/" element={<Home />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/map" element={<Map />} />
+            <Route path="/account" element={<Profile />} />
+            <Route
+              path="/search"
+              element={<SearchContainer searchQuery={searchQuery} />}
+            >
+              <Route>
+                <Route index element={<Beers searchQuery={searchQuery} />} />
+                <Route
+                  index
+                  path="beers"
+                  element={<Beers searchQuery={searchQuery} />}
+                />
+                <Route
+                  path="bars"
+                  element={<Bars searchQuery={searchQuery} />}
+                />
+                <Route
+                  path="users"
+                  element={<Users searchQuery={searchQuery} />}
+                />
+                <Route
+                  path="events"
+                  element={<Events searchQuery={searchQuery} />}
+                />
+              </Route>
             </Route>
-          </Route>
-        </Routes>
-        <NavBar value={currentView} onChange={handleNavBarChange} />
-      </div>
+          </Routes>
+          <NavBar value={currentView} onChange={handleNavBarChange} />
+        </div>
+      </UserContextProvider>
     </>
   );
 }

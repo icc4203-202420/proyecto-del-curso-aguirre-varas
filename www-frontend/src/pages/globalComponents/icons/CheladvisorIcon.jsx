@@ -6,7 +6,7 @@ const CheladvisorIcon = () => {
       viewBox="0 0 200 200"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      xmlns:xlink="http://www.w3.org/1999/xlink"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
     >
       <rect width="200" height="200" rx="100" fill="url(#pattern0_1036_1182)" />
       <defs>

@@ -1,4 +1,5 @@
-html, body {
+html,
+body {
   margin: 0;
   padding: 0;
   height: 100%;
@@ -18,6 +19,7 @@ html, body {
   flex-direction: column;
   justify-content: space-between;
   color: #f0e1d2;
+  background-color: #210f04; /* Fondo de todo el borde */
 }
 
 .logo {
