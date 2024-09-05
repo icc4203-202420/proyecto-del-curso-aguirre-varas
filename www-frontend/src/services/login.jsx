@@ -1,6 +1,6 @@
 import axios, { AxiosError } from "axios";
 
-//return jwt
+//returns user details
 export default async function login(email, password) {
   const baseURL = import.meta.env.VITE_BACKEND_URL;
 
@@ -11,7 +11,7 @@ export default async function login(email, password) {
         password: password,
       },
     });
-    return response.headers.get("Authorization");
+    return response;
   } catch (error) {
     throw new AxiosError(error);
   }
