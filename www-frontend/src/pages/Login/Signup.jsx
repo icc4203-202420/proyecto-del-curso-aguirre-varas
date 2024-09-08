@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import Box from "@mui/material/Box";
-import Input from "@mui/material/Input";
 import TextField from "@mui/material/TextField";
-import CheladvisorIcon from "../globalComponents/icons/CheladvisorIcon";
+
 import { palette } from "../../palette";
-import { alpha, styled } from "@mui/material/styles";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import InputAdornment from "@mui/material/InputAdornment";
 import FormControl from "@mui/material/FormControl";
@@ -22,6 +20,12 @@ import useUser from "../../hooks/useUser";
 import { useNavigate } from "react-router-dom";
 
 import signupService from "../../services/signup";
+
+import { useFormik } from "formik";
+
+import { signupSchema } from "../schemas/signup";
+
+import { styled } from "@mui/material/styles";
 
 const CssTextField = styled(TextField)({
   color: palette.clear,
@@ -41,14 +45,51 @@ const Signup = () => {
     isError: false,
     errorMsg: "",
   });
-  const [email, setEmail] = useState("");
+  /* const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [userName, setUserName] = useState("");
-  const [passwordConfirmation, setPasswordConfirmation] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState(""); */
 
   const [showPassword, setShowPassword] = useState(false);
+
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+      userName: "",
+      firstName: "",
+      lastName: "",
+      passwordConfirmation: "",
+    },
+    onSubmit: (values) => {
+      console.log(values);
+      setState({ ...state, isLoading: true });
+
+      signupService(
+        values.email,
+        values.firstName,
+        values.lastName,
+        values.userName,
+        values.password,
+        values.passwordConfirmation
+      )
+        .then((response) => {
+          setState({ isLoading: false, isError: false, errorMsg: "" });
+          console.log(response);
+          navigate("/login");
+        })
+        .catch((error) => {
+          setState({
+            isLoading: false,
+            isError: true,
+            errorMsg: error.toJSON().message.response.data.status.message,
+          });
+        });
+    },
+    validationSchema: signupSchema,
+  });
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
@@ -56,18 +97,7 @@ const Signup = () => {
     event.preventDefault();
   };
 
-  const validateLength = () => {
-    return (
-      email.length > 0 &&
-      password.length > 0 &&
-      firstName.length > 0 &&
-      lastName.length > 0 &&
-      userName.length > 0 &&
-      passwordConfirmation.length > 0
-    );
-  };
-
-  const handleSubmit = (event) => {
+  /* const handleSubmit = (event) => {
     event.preventDefault();
     setState({ ...state, isLoading: true });
     signupService(
@@ -90,7 +120,7 @@ const Signup = () => {
           errorMsg: error.toJSON().message.response.data.status.message,
         });
       });
-  };
+  }; */
 
   useEffect(() => {
     if (isAuthenticated) {
@@ -104,7 +134,7 @@ const Signup = () => {
     <>
       <Box
         component="form"
-        onSubmit={handleSubmit}
+        onSubmit={formik.handleSubmit}
         sx={{
           height: "100vh",
           display: "flex",
@@ -139,10 +169,13 @@ const Signup = () => {
               <Grid item xs={6}>
                 <CssTextField
                   fullWidth
-                  id="email-field"
+                  id="email"
                   label="Email"
                   variant="filled"
-                  onChange={(e) => setEmail(e.target.value)}
+                  value={formik.values.email}
+                  onChange={formik.handleChange}
+                  helperText={formik.touched.email && formik.errors.email}
+                  error={formik.touched.email && Boolean(formik.errors.email)}
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">
@@ -155,28 +188,45 @@ const Signup = () => {
               <Grid item xs={6}>
                 <CssTextField
                   fullWidth
-                  id="first-name-field"
+                  id="firstName"
                   label="First Name"
                   variant="filled"
-                  onChange={(e) => setFirstName(e.target.value)}
+                  value={formik.values.firstName}
+                  error={
+                    formik.touched.firstName && Boolean(formik.errors.firstName)
+                  }
+                  helperText={
+                    formik.touched.firstName && formik.errors.firstName
+                  }
+                  onChange={formik.handleChange}
                 />
               </Grid>
               <Grid item xs={6}>
                 <CssTextField
                   fullWidth
-                  id="last-name-field"
+                  id="lastName"
                   label="Last Name"
                   variant="filled"
-                  onChange={(e) => setLastName(e.target.value)}
+                  value={formik.values.lastName}
+                  helperText={formik.touched.lastName && formik.errors.lastName}
+                  error={
+                    formik.touched.lastName && Boolean(formik.errors.lastName)
+                  }
+                  onChange={formik.handleChange}
                 />
               </Grid>
               <Grid item xs={6}>
                 <CssTextField
                   fullWidth
-                  id="user-name-field"
+                  id="userName"
                   label="User Name"
                   variant="filled"
-                  onChange={(e) => setUserName(e.target.value)}
+                  value={formik.values.userName}
+                  onChange={formik.handleChange}
+                  helperText={formik.touched.userName && formik.errors.userName}
+                  error={
+                    formik.touched.userName && Boolean(formik.errors.userName)
+                  }
                   InputProps={{
                     startAdornment: (
                       <InputAdornment position="start">@</InputAdornment>
@@ -186,11 +236,16 @@ const Signup = () => {
               </Grid>
               <Grid item xs={6}>
                 <CssTextField
-                  id="password-field"
+                  id="password"
                   label="Password"
                   variant="filled"
+                  value={formik.values.password}
                   type={showPassword ? "text" : "password"}
-                  onChange={(e) => setPassword(e.target.value)}
+                  onChange={formik.handleChange}
+                  helperText={formik.touched.password && formik.errors.password}
+                  error={
+                    formik.touched.password && Boolean(formik.errors.password)
+                  }
                   InputProps={{
                     endAdornment: (
                       <InputAdornment position="end">
@@ -209,11 +264,20 @@ const Signup = () => {
               </Grid>
               <Grid item xs={6}>
                 <CssTextField
-                  id="password-confirmation-field"
+                  id="passwordConfirmation"
                   label="Confirm Password"
                   variant="filled"
                   type="password"
-                  onChange={(e) => setPasswordConfirmation(e.target.value)}
+                  value={formik.values.passwordConfirmation}
+                  helperText={
+                    formik.touched.passwordConfirmation &&
+                    formik.errors.passwordConfirmation
+                  }
+                  error={
+                    formik.touched.passwordConfirmation &&
+                    Boolean(formik.errors.passwordConfirmation)
+                  }
+                  onChange={formik.handleChange}
                 />
               </Grid>
             </Grid>
@@ -231,7 +295,7 @@ const Signup = () => {
               Sign up
             </Button>
             {state.isLoading && <h2>Loading...</h2>}
-            {state.isError && <h2>Please try again</h2>}
+            {state.isError && <h2>{state.errorMsg}</h2>}
           </FormControl>
           <Typography variant="body2" sx={{ color: palette.lager }}>
             Already have an account?
