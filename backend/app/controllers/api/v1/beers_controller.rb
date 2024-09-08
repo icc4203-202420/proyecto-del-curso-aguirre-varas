@@ -28,13 +28,15 @@ class API::V1::BeersController < ApplicationController
   def show
     get_beer_avg_rating if @beer.reviews.any?
     @bars = @beer.bars
+    @brand = @beer.brand
+    @brewery = @brand.brewery
     if @beer.image.attached?
       render json: @beer.as_json.merge({ 
         image_url: url_for(@beer.image), 
         thumbnail_url: url_for(@beer.thumbnail)}),
         status: :ok
     else
-      render json: { beer: @beer.as_json, bars_beer: @bars }, status: :ok
+      render json: { beer: @beer.as_json, bars_beer: @bars, brand: @brand, brewery: @brewery}, status: :ok
     end 
   end
 
