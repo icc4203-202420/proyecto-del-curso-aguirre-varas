@@ -19,6 +19,8 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Link } from "react-router-dom";
 import useUser from "../../hooks/useUser";
 import { useNavigate } from "react-router-dom";
+import { useFormik } from "formik";
+import { loginSchema } from "../schemas/login";
 
 const CssTextField = styled(TextField)({
   color: palette.clear,
@@ -33,20 +35,26 @@ const CssTextField = styled(TextField)({
 const Login = () => {
   const navigate = useNavigate();
   const { isAuthenticated, login, isLoading, isError, errorMsg } = useUser();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  //const [email, setEmail] = useState("");
+  //const [password, setPassword] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
+
+  const formik = useFormik({
+    initialValues: {
+      email: "",
+      password: "",
+    },
+    onSubmit: (values) => {
+      login(values.email, values.password);
+    },
+    validationSchema: loginSchema,
+  });
 
   const handleClickShowPassword = () => setShowPassword((show) => !show);
 
   const handleMouseDownPassword = (event) => {
     event.preventDefault();
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    login(email, password);
   };
 
   useEffect(() => {
@@ -61,7 +69,7 @@ const Login = () => {
     <>
       <Box
         component="form"
-        onSubmit={handleSubmit}
+        onSubmit={formik.handleSubmit}
         sx={{
           height: "100vh",
           display: "flex",
@@ -89,11 +97,14 @@ const Login = () => {
           </Typography>
           <FormControl variant="standard" sx={{ marginBottom: "16px" }}>
             <CssTextField
-              fullWidth
-              id="email-field"
+              id="email"
               label="Email"
               variant="filled"
-              onChange={(e) => setEmail(e.target.value)}
+              value={formik.values.email}
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              error={formik.touched.email && Boolean(formik.errors.email)}
+              helperText={formik.touched.email && formik.errors.email}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -103,11 +114,14 @@ const Login = () => {
               }}
             />
             <CssTextField
-              id="password-field"
+              id="password"
               label="Password"
               variant="filled"
+              value={formik.values.password}
               type={showPassword ? "text" : "password"}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={formik.handleChange}
+              error={formik.touched.password && Boolean(formik.errors.password)}
+              helperText={formik.touched.password && formik.errors.password}
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
