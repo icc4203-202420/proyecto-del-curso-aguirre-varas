@@ -1,5 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Box, Typography, Card, CardContent, Button } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Card,
+  CardContent,
+  Button,
+  Rating,
+} from "@mui/material";
 
 import BeerReviewForm from "./BeerReviewForm";
 
@@ -87,6 +94,12 @@ const BeerDetail = ({ selectedBeer, onBack }) => {
             Alcohol: {selectedBeer.alcohol}
           </Typography>
           <Typography variant="body1">BLG: {selectedBeer.blg}</Typography>
+          <Rating
+            value={selectedBeer.avg_rating}
+            precision={0.5}
+            readOnly
+            sx={{ color: "#b1977a" }}
+          />
         </CardContent>
       </Card>
       {isAuthenticated && (

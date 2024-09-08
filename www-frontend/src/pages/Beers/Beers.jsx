@@ -58,7 +58,7 @@ const Beers = ({ searchQuery }) => {
               key={beer.id}
               name={beer.name}
               style={beer.style}
-              rating={beer.rating}
+              rating={beer.avg_rating}
               onClick={() => handleBeerClick(beer)} // Manejar clic
             />
           ))}
