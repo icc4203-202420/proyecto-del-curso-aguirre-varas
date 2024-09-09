@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useReducer } from "react";
 import {
   Box,
   Typography,
@@ -13,9 +13,10 @@ import makeReviewService from "../../services/reviews/makeReview";
 import fetchReviewsFromUserService from "../../services/reviews/fetchReviews";
 import fetchReviewsFromBeerService from "../../services/reviews/fetchReviewsFromBeer";
 import useUser from "../../hooks/useUser";
+import { all } from "axios";
 
-const filterUserReviews = (reviews, selectedBeerId) => {
-  return reviews.filter((review) => review.beer_id === selectedBeerId);
+const filterUserReviews = (reviews, userId) => {
+  return reviews.filter((review) => review.user_id === userId);
 };
 
 const BeerDetail = ({ selectedBeer, onBack }) => {
@@ -25,14 +26,49 @@ const BeerDetail = ({ selectedBeer, onBack }) => {
   const [beerReviews, setBeerReviews] = useState([]); // Estado para las reviews
   const [barsBeer, setBarsBeer] = useState([]); // Estado para los bares
   const [brewery, setBrewery] = useState(null); // Estado para la cervecería
-  const [reviewsState, setReviewsState] = useState({
+  /* const [reviewsState, setReviewsState] = useState({
     isLoading: true,
     isError: false,
     errorMsg: "",
-  });
+  }); */
   const [reviewSubmitMessage, setReviewSubmitMessage] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const reviewsPerPage = 5;
+
+  const allReviewsReducer = (state, action) => {
+    switch (action.type) {
+      case "FETCH_REVIEWS_REQUEST":
+        console.log("Fetching reviews...");
+        return { ...state, isLoading: true, isError: false, errorMsg: "" };
+      case "FETCH_REVIEWS_SUCCESS":
+        console.log("Received reviewsdawdwq:", action.payload.reviews); // Línea para depuración
+        console.log("Received user reviews:", action.payload.userReviews); // Línea para depuración
+        return {
+          ...state,
+          isLoading: false,
+          reviews: action.payload.reviews,
+          userReviews: action.payload.userReviews,
+        };
+      case "FETCH_REVIEWS_FAILURE":
+        console.log("Couldn't fetch reviews:", action.payload); // Línea para depuración
+        return {
+          ...state,
+          isLoading: false,
+          isError: true,
+          errorMsg: action.payload,
+        };
+      default:
+        return state;
+    }
+  };
+
+  const [allReviewsState, dispatchAllReviews] = useReducer(allReviewsReducer, {
+    allReviews: [],
+    isLoading: true,
+    isError: false,
+    errorMsg: "",
+    userReviews: [],
+  });
 
   const onReviewSubmit = (values) => {
     const review = {
@@ -54,26 +90,21 @@ const BeerDetail = ({ selectedBeer, onBack }) => {
   useEffect(() => {
     if (isAuthenticated) {
       const user = getUserData();
-      fetchReviewsFromUserService(user.user.id)
-        .then((response) => {
-          setUserBeerReviews(() => {
-            return filterUserReviews(response.reviews, selectedBeer.id);
-          });
-          setReviewsState({ isLoading: false, isError: false, errorMsg: "" });
-        })
-        .catch((error) => {
-          setReviewsState({
-            isLoading: false,
-            isError: true,
-            errorMsg: "Couldn't fetch reviews",
-          });
-          console.log(error);
-        });
+      dispatchAllReviews({ type: "FETCH_REVIEWS_REQUEST" });
       fetchReviewsFromBeerService(selectedBeer.id)
         .then((response) => {
-          setBeerReviews(response.reviews);
+          const reviews = response.reviews;
+          const userReviews = filterUserReviews(reviews, user.user.id);
+          dispatchAllReviews({
+            type: "FETCH_REVIEWS_SUCCESS",
+            payload: { reviews, userReviews },
+          });
         })
         .catch((error) => {
+          dispatchAllReviews({
+            type: "FETCH_REVIEWS_FAILURE",
+            payload: "Couldn't fetch reviews",
+          });
           console.log(error);
         });
     }
@@ -233,17 +264,14 @@ const BeerDetail = ({ selectedBeer, onBack }) => {
             }}
             onSubmit={onReviewSubmit}
           />
+
           <Box sx={{ marginTop: "32px" }}>
             <Typography variant="h5" color="#fff">
-              Your REVIEWS
+              YOUR REVIEWS
             </Typography>
-            {reviewsState.isLoading && <Typography>Loading...</Typography>}
-            {reviewsState.isError && (
-              <Typography>{reviewsState.errorMsg}</Typography>
-            )}
-            {!reviewsState.isLoading &&
-              currentReviews.length > 0 &&
-              currentReviews.map((review) => (
+            {!allReviewsState.isLoading &&
+              allReviewsState.userReviews.length > 0 &&
+              allReviewsState.userReviews.map((review) => (
                 <Card
                   key={review.id}
                   sx={{
@@ -264,33 +292,17 @@ const BeerDetail = ({ selectedBeer, onBack }) => {
                   </CardContent>
                 </Card>
               ))}
-            {/* Paginación */}
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                marginTop: "16px",
-              }}
-            >
-              <Pagination
-                count={Math.ceil(beerReviews.length / reviewsPerPage)}
-                page={currentPage}
-                onChange={handlePageChange}
-                color="primary"
-              />
-            </Box>
-          </Box>
-          <Box sx={{ marginTop: "32px" }}>
             <Typography variant="h5" color="#fff">
               All REVIEWS
             </Typography>
-            {reviewsState.isLoading && <Typography>Loading...</Typography>}
-            {reviewsState.isError && (
-              <Typography>{reviewsState.errorMsg}</Typography>
+            {allReviewsState.isLoading && <Typography>Loading...</Typography>}
+
+            {allReviewsState.isError && (
+              <Typography>{allReviewsState.errorMsg}</Typography>
             )}
-            {!reviewsState.isLoading &&
-              beerReviews.length > 0 &&
-              beerReviews.map((review) => (
+            {!allReviewsState.isLoading &&
+              allReviewsState.reviews.length > 0 &&
+              allReviewsState.reviews.map((review) => (
                 <Card
                   key={review.id}
                   sx={{
@@ -319,12 +331,18 @@ const BeerDetail = ({ selectedBeer, onBack }) => {
                 marginTop: "16px",
               }}
             >
-              <Pagination
-                count={Math.ceil(beerReviews.length / reviewsPerPage)}
-                page={currentPage}
-                onChange={handlePageChange}
-                color="primary"
-              />
+              {allReviewsState.reviews &&
+                allReviewsState.reviews.length > 0 &&
+                allReviewsState.reviews.length > reviewsPerPage && (
+                  <Pagination
+                    count={Math.ceil(
+                      allReviewsState.reviews.length / reviewsPerPage
+                    )}
+                    page={currentPage}
+                    onChange={handlePageChange}
+                    color="primary"
+                  />
+                )}
             </Box>
           </Box>
         </Box>
