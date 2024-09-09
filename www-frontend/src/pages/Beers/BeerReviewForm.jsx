@@ -7,15 +7,15 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  Rating,
 } from "@mui/material";
 import { reviewSchema } from "../schemas/review";
 
 const BeerReviewForm = ({ beer, open, onClose, onSubmit }) => {
-  //console.log(JSON.stringify(beer));
   const formik = useFormik({
     initialValues: {
       text: "",
-      rating: "",
+      rating: 0, // Inicializamos con 0 para la calificación
     },
     validationSchema: reviewSchema,
     onSubmit: (values) => {
@@ -23,6 +23,7 @@ const BeerReviewForm = ({ beer, open, onClose, onSubmit }) => {
       onClose();
     },
   });
+
   return (
     <Dialog open={open} onClose={onClose}>
       <DialogTitle>{beer.name} Review</DialogTitle>
@@ -40,16 +41,16 @@ const BeerReviewForm = ({ beer, open, onClose, onSubmit }) => {
             error={formik.touched.text && Boolean(formik.errors.text)}
             helperText={formik.touched.text && formik.errors.text}
           />
-          <TextField
-            fullWidth
+          <Rating
             id="rating"
             name="rating"
-            label="Rating"
             value={formik.values.rating}
-            onChange={formik.handleChange}
+            onChange={(event, newValue) => {
+              formik.setFieldValue("rating", newValue); // Actualiza la calificación
+            }}
             onBlur={formik.handleBlur}
-            error={formik.touched.rating && Boolean(formik.errors.rating)}
-            helperText={formik.touched.rating && formik.errors.rating}
+            precision={0.5} // Permite calificaciones con incrementos de 0.5
+            sx={{ marginTop: "16px" }}
           />
         </DialogContent>
         <DialogActions>
