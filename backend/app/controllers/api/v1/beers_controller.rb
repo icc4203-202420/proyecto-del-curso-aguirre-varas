@@ -9,6 +9,11 @@ class API::V1::BeersController < ApplicationController
   # GET /beers
   def index
     @beers = Beer.all
+
+    for @beer in @beers
+      get_beer_avg_rating if @beer.reviews.any?
+    end
+
     render json: { beers: @beers }, status: :ok
   end
 
@@ -21,13 +26,17 @@ class API::V1::BeersController < ApplicationController
   
   # GET /beers/:id
   def show
+    get_beer_avg_rating if @beer.reviews.any?
+    @bars = @beer.bars
+    @brand = @beer.brand
+    @brewery = @brand.brewery
     if @beer.image.attached?
       render json: @beer.as_json.merge({ 
         image_url: url_for(@beer.image), 
         thumbnail_url: url_for(@beer.thumbnail)}),
         status: :ok
     else
-      render json: { beer: @beer.as_json }, status: :ok
+      render json: { beer: @beer.as_json, bars_beer: @bars, brand: @brand, brewery: @brewery}, status: :ok
     end 
   end
 
@@ -84,5 +93,10 @@ class API::V1::BeersController < ApplicationController
   def verify_jwt_token
     authenticate_user!
     head :unauthorized unless current_user
-  end  
+  end 
+
+  def get_beer_avg_rating
+    @beer.avg_rating = @beer.reviews.average(:rating)
+    @beer.save
+  end
 end

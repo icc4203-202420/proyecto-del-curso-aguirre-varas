@@ -4,6 +4,10 @@ class API::V1::UsersController < ApplicationController
   
   def index
     @users = User.includes(:reviews, :address).all
+    if @users.empty?
+      @users = User.all
+    end
+    render json: @users, status: :ok
   end
 
   def show
