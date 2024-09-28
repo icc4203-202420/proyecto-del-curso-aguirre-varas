@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Box, Typography, TextField, Button } from "@mui/material";
+import { Box, Typography, TextField, Button, MenuItem, Paper } from "@mui/material";
 import { GoogleMap, useLoadScript, Marker } from "@react-google-maps/api";
+import axios from "axios";
 
 const libraries = ["places"];
 const mapContainerStyle = {
@@ -14,16 +15,19 @@ const options = {
 
 const Map = () => {
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: "AIzaSyBDIFtO97enRHhaQtYRNgRPSTAUEfeFfkE", // Reemplaza con tu API key de Google
+    googleMapsApiKey: "AIzaSyBDIFtO97enRHhaQtYRNgRPSTAUEfeFfkE", 
     libraries,
   });
 
   const [location, setLocation] = useState({ lat: -34.397, lng: 150.644 });
-  const [bars, setBars] = useState([]);
+  const [bars, setBars] = useState([]); // Almacenar todos los bares
+  const [filteredBars, setFilteredBars] = useState([]); // Bares filtrados
   const [searchTerm, setSearchTerm] = useState("");
+  const [suggestions, setSuggestions] = useState([]); // Sugerencias desplegables
+  const [selectedBar, setSelectedBar] = useState(null); // Bar seleccionado
 
+  // Obtener la ubicación del usuario
   useEffect(() => {
-    // Obtener la ubicación actual del navegador
     navigator.geolocation.getCurrentPosition(
       (position) => {
         setLocation({
@@ -31,27 +35,47 @@ const Map = () => {
           lng: position.coords.longitude,
         });
       },
-      () => null // Manejar error si el usuario no da permiso
+      (error) => {
+        console.error("Error obteniendo ubicación:", error);
+      }
     );
   }, []);
 
-  const handleSearch = useCallback(() => {
-    const service = new window.google.maps.places.PlacesService(
-      document.createElement("div")
-    );
-    const request = {
-      location,
-      radius: "5000", // Radio de búsqueda en metros
-      query: searchTerm,
-      type: ["bar"],
-    };
+  // Obtener los bares desde la API
+  useEffect(() => {
+    axios.get("http://127.0.0.1:3001/api/v1/bars")
+      .then((response) => {
+        setBars(response.data.bars); // Guardar bares obtenidos
+        setFilteredBars(response.data.bars); // Inicializar los bares filtrados
+      })
+      .catch((error) => {
+        console.error("Error al obtener bares:", error);
+      });
+  }, []);
 
-    service.textSearch(request, (results, status) => {
-      if (status === window.google.maps.places.PlacesServiceStatus.OK) {
-        setBars(results);
-      }
-    });
-  }, [location, searchTerm]);
+  // Manejar la búsqueda y sugerencias
+  const handleSearchChange = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+
+    if (value === "") {
+      setSuggestions([]);
+      setFilteredBars(bars); // Mostrar todos los bares si no hay término de búsqueda
+    } else {
+      const filtered = bars.filter((bar) =>
+        bar.name.toLowerCase().includes(value.toLowerCase())
+      );
+      setSuggestions(filtered);
+    }
+  };
+
+  // Cuando seleccionas un bar de las sugerencias
+  const handleSuggestionClick = (bar) => {
+    setSearchTerm(bar.name);
+    setSuggestions([]);
+    setFilteredBars([bar]); // Filtrar solo el bar seleccionado
+    setSelectedBar(bar); // Establecer el bar seleccionado para centrar el mapa
+  };
 
   if (loadError) return <div>Error cargando el mapa</div>;
   if (!isLoaded) return <div>Cargando mapa...</div>;
@@ -62,38 +86,68 @@ const Map = () => {
         Map View
       </Typography>
 
-      <TextField
-        label="Buscar Bar"
-        variant="outlined"
-        fullWidth
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        sx={{ marginBottom: 2 }}
-      />
-      <Button variant="contained" color="primary" onClick={handleSearch}>
-        Buscar
-      </Button>
+      <Box sx={{ position: "relative" }}>
+        {/* Input con fondo blanco */}
+        <TextField
+          label="Buscar Bar"
+          variant="outlined"
+          fullWidth
+          value={searchTerm}
+          onChange={handleSearchChange}
+          sx={{
+            backgroundColor: "white",  // Fondo blanco
+            marginBottom: 2,
+          }}
+        />
+
+        {/* Lista desplegable de sugerencias */}
+        {suggestions.length > 0 && (
+          <Paper
+            sx={{
+              position: "absolute",
+              width: "100%",
+              zIndex: 10,
+              maxHeight: "200px",
+              overflowY: "auto",
+            }}
+          >
+            {suggestions.map((bar) => (
+              <MenuItem key={bar.id} onClick={() => handleSuggestionClick(bar)}>
+                {bar.name}
+              </MenuItem>
+            ))}
+          </Paper>
+        )}
+      </Box>
 
       <GoogleMap
         mapContainerStyle={mapContainerStyle}
-        zoom={14}
-        center={location}
+        zoom={selectedBar ? 16 : 14} // Acercar más si un bar está seleccionado
+        center={selectedBar ? { lat: selectedBar.latitude, lng: selectedBar.longitude } : location} // Centrar en el bar seleccionado o en la ubicación del usuario
         options={options}
       >
+        {/* Marcador de la ubicación del usuario */}
         <Marker position={location} />
-        {bars.map((bar) => (
-          <Marker
-            key={bar.place_id}
-            position={{
-              lat: bar.geometry.location.lat(),
-              lng: bar.geometry.location.lng(),
-            }}
-            title={bar.name}
-          />
-        ))}
+
+        {/* Agregar marcadores de bares filtrados */}
+        {filteredBars.length > 0 ? (
+          filteredBars.map((bar) => (
+            <Marker
+              key={bar.id}
+              position={{
+                lat: bar.latitude,
+                lng: bar.longitude,
+              }}
+              title={bar.name}
+            />
+          ))
+        ) : (
+          <Typography variant="body1">No hay bares disponibles.</Typography>
+        )}
       </GoogleMap>
     </Box>
   );
 };
 
 export default Map;
+
