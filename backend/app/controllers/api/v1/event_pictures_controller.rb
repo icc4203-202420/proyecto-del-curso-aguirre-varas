@@ -7,11 +7,11 @@ class API::V1::EventPicturesController < ApplicationController
 
 
   def index
-    @event_pictures = @event.event_pictures.includes(:image_attachment) # Eager load the image
+    @event_pictures = @event.event_pictures.includes(:image_attachment) 
 
     json_response = @event_pictures.map do |event_picture|
       event_picture.as_json.merge(
-        image_url: url_for(event_picture.image) # Add the image URL
+        image_url: url_for(event_picture.image)
       )
     end
     json_response.each do |event_picture|
@@ -23,12 +23,12 @@ class API::V1::EventPicturesController < ApplicationController
   end
 
   def create
+    if !event_picture_params[:image_base64].present?
+      return render json: { error: 'Image is required.' }, status: :bad_request
+    end
     @event_picture = @event.event_pictures.new(event_picture_params.except(:image_base64))
     @event_picture.user_id = current_user.id
-
-    if event_picture_params[:image_base64].present?
-      handle_image_attachment
-    end
+    handle_image_attachment
 
     if @event_picture.save
       render json: { message: 'Image successfully uploaded.', event_picture: @event_picture }, status: :created
@@ -37,7 +37,6 @@ class API::V1::EventPicturesController < ApplicationController
     end
   end
 
-  # This is the missing destroy action
   def destroy
     @event_picture = @event.event_pictures.find(params[:id])
     if @event_picture.destroy
