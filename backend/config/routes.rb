@@ -34,6 +34,7 @@ Rails.application.routes.draw do
         resources :attendances, only: [:index, :create]
          post 'check_in', to: 'attendances#check_in'
           get 'all_check_ins', to: 'attendances#all_check_ins'
+        resources :event_pictures, only: [:index, :create, :destroy]
       end
       resources :users do
         resources :reviews, only: [:index]
