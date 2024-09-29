@@ -1,20 +1,49 @@
 class API::V1::EventPicturesController < ApplicationController
+  include ImageProcessing
   include Authenticable
-  include ImageProcessing  # Assuming you have a module to process Base64 images
-  before_action :verify_jwt_token
+
   before_action :set_event
-  before_action :set_event_picture, only: [:destroy]
+  before_action :verify_jwt_token, only: [:create, :destroy]
+
+
+  def index
+    @event_pictures = @event.event_pictures.includes(:image_attachment) # Eager load the image
+
+    json_response = @event_pictures.map do |event_picture|
+      event_picture.as_json.merge(
+        image_url: url_for(event_picture.image) # Add the image URL
+      )
+    end
+    json_response.each do |event_picture|
+      user = User.find(event_picture['user_id'])
+      event_picture.merge!(user: { id: user.id, handle: user.handle })
+    end
+
+    render json: { event_pictures: json_response }, status: :ok
+  end
 
   def create
-    @event_picture = @event.event_pictures.new(event_picture_params)
-    @event_picture.user_id = current_user.id  # Assign the current user as the uploader
+    @event_picture = @event.event_pictures.new(event_picture_params.except(:image_base64))
+    @event_picture.user_id = current_user.id
 
-    handle_image_attachment if event_picture_params[:image_base64]
+    if event_picture_params[:image_base64].present?
+      handle_image_attachment
+    end
 
     if @event_picture.save
       render json: { message: 'Image successfully uploaded.', event_picture: @event_picture }, status: :created
     else
-      render json: @event_picture.errors, status: :unprocessable_entity
+      render json: { errors: @event_picture.errors }, status: :unprocessable_entity
+    end
+  end
+
+  # This is the missing destroy action
+  def destroy
+    @event_picture = @event.event_pictures.find(params[:id])
+    if @event_picture.destroy
+      render json: { message: 'Image successfully deleted.' }, status: :no_content
+    else
+      render json: { errors: @event_picture.errors }, status: :unprocessable_entity
     end
   end
 
@@ -29,7 +58,6 @@ class API::V1::EventPicturesController < ApplicationController
     params.require(:event_picture).permit(:description, :image_base64)
   end
 
-  # Adapted handle_image_attachment for EventPicture
   def handle_image_attachment
     decoded_image = decode_image(event_picture_params[:image_base64])
     @event_picture.image.attach(io: decoded_image[:io], filename: decoded_image[:filename], content_type: decoded_image[:content_type])
