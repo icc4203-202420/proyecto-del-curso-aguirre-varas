@@ -12,10 +12,9 @@ const fetchAllEvents = async () => {
 
   try {
     const response = await axios.get(url);
-    console.log(response);
-    return response.data.events;
+    return response.data.events; 
   } catch (error) {
-    console.error(error);
+    console.error("Error fetching events:", error);
     return [];
   }
 };
@@ -26,6 +25,7 @@ const Home = () => {
 
   useEffect(() => {
     setUserName("Joaquin Varas");
+
     fetchAllEvents().then((data) => {
       setEvents(data);
     });
@@ -33,6 +33,7 @@ const Home = () => {
 
   return (
     <Box sx={{ padding: "26px", marginTop: "64px" }}>
+      {/* Perfil de usuario */}
       <Paper
         elevation={3}
         sx={{
@@ -69,7 +70,7 @@ const Home = () => {
           marginTop: "16px",
         }}
       >
-        {events &&
+        {events.length > 0 ? (
           events.map((event) => (
             <EventCard
               key={event.id}
@@ -79,7 +80,10 @@ const Home = () => {
               description={event.description}
               sx={{ marginBottom: "16px" }}
             />
-          ))}
+          ))
+        ) : (
+          <Typography>No events found</Typography> 
+        )}
       </Box>
     </Box>
   );

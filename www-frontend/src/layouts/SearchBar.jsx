@@ -1,16 +1,12 @@
 import React from "react";
 import { AppBar, Toolbar, IconButton, InputBase } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
-import MenuIcon from "@mui/icons-material/Menu";
 import { styled, alpha } from "@mui/material/styles";
-
-import { palette } from "../palette";
-
-import { Link } from "react-router-dom";
 import Button from "@mui/material/Button";
-
-import useUser from "../hooks/useUser";
 import { useNavigate } from "react-router-dom";
+import useUser from "../hooks/useUser";
+
+const selectedColor = "#BB6B00"; 
 
 const Search = styled("div")(({ theme }) => ({
   position: "relative",
@@ -81,7 +77,16 @@ const SearchAppBar = ({ onSearchClick, searchQuery, onSearchChange }) => {
             onChange={onSearchChange}
           />
         </Search>
-        <Button color="primary" onClick={handleLogoutButtonClick}>
+        <Button
+          onClick={handleLogoutButtonClick}
+          sx={{
+            backgroundColor: selectedColor,
+            "&:hover": {
+              backgroundColor: alpha(selectedColor, 0.85),
+            },
+            color: "#fff",
+          }}
+        >
           {isAuthenticated ? "Logout" : "Login"}
         </Button>
       </Toolbar>

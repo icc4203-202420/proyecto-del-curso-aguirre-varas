@@ -1,22 +1,32 @@
 import React, { useState } from "react";
-import { Box } from "@mui/material";
-import { palette } from "../palette";
-import Tabs from "@mui/material/Tabs";
-import Tab from "@mui/material/Tab";
+import { Box, Tabs, Tab } from "@mui/material";
 import Beers from "./Beers/Beers";
 import Bars from "./Bars/Bars";
-import Users from "./Users/Users";
 import Events from "./Events/Events";
-
-import { Link } from "react-router-dom";
-import { Outlet } from "react-router-dom";
+import { palette } from "../palette";
 
 const SearchContainer = ({ searchQuery }) => {
   const [filter, setFilter] = useState(0);
-
   const handleFilterChange = (event, newValue) => {
     setFilter(newValue);
   };
+
+  const renderFilteredContent = () => {
+    switch (filter) {
+      case 0:
+        return <Beers searchQuery={searchQuery} />;
+      case 1:
+        return <Bars searchQuery={searchQuery} />;
+      case 2:
+        return <h1>Search for user handle</h1>;
+      case 3:
+        return <Events searchQuery={searchQuery} />;
+      default:
+        return <Beers searchQuery={searchQuery} />;
+    }
+  };
+
+  const selectedColor = "#BB6B00"; // Define el color global
 
   return (
     <>
@@ -27,41 +37,47 @@ const SearchContainer = ({ searchQuery }) => {
             onChange={handleFilterChange}
             aria-label="basic tabs example"
             sx={{ marginBottom: "6px" }}
+            TabIndicatorProps={{ style: { backgroundColor: selectedColor } }} // Indicador de la pestaña activa
           >
             <Tab
-              component={Link}
-              to="/search/beers"
               label="Beers"
               id="0"
-              sx={{ color: palette.lager }}
+              sx={{
+                color: palette.lager,
+                "&.Mui-selected": { color: selectedColor },
+              }}
             />
             <Tab
-              component={Link}
-              to="/search/bars"
               label="Bars"
               id="1"
-              sx={{ color: palette.lager }}
+              sx={{
+                color: palette.lager,
+                "&.Mui-selected": { color: selectedColor },
+              }}
             />
             <Tab
-              component={Link}
-              to="/search/users"
               label="Users"
               id="2"
-              sx={{ color: palette.lager }}
+              sx={{
+                color: palette.lager,
+                "&.Mui-selected": { color: selectedColor },
+              }}
             />
             <Tab
-              component={Link}
-              to="/search/events"
               label="Events"
               id="3"
-              sx={{ color: palette.lager }}
+              sx={{
+                color: palette.lager,
+                "&.Mui-selected": { color: selectedColor },
+              }}
             />
           </Tabs>
-          <Outlet />
         </Box>
+        {renderFilteredContent()}
       </Box>
     </>
   );
 };
 
 export default SearchContainer;
+

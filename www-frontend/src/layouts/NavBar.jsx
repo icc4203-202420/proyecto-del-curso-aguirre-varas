@@ -6,8 +6,9 @@ import HomeIcon from "@mui/icons-material/Home";
 import MapIcon from "@mui/icons-material/Map";
 import AccountCircleIcon from "@mui/icons-material/AccountCircle";
 import { Paper } from "@mui/material";
-
 import { Link } from "react-router-dom";
+
+const selectedColor = "#BB6B00"; 
 
 export default function NavBar({ value, onChange }) {
   return (
@@ -35,7 +36,21 @@ export default function NavBar({ value, onChange }) {
           value={0}
           label="Home"
           icon={<HomeIcon />}
-          sx={{ color: "#FFD597" }}
+          sx={{
+            color: value === 0 ? selectedColor : "#FFD597",
+            "&.Mui-selected": {
+              color: selectedColor,
+            },
+            "&:hover": {
+              color: selectedColor,
+            },
+            "&:active": {
+              color: selectedColor,
+            },
+            "& .MuiTouchRipple-root": {
+              color: selectedColor,
+            },
+          }}
         />
         <BottomNavigationAction
           component={Link}
@@ -43,7 +58,21 @@ export default function NavBar({ value, onChange }) {
           to="/map"
           label="Map"
           icon={<MapIcon />}
-          sx={{ color: "#FFD597" }}
+          sx={{
+            color: value === 1 ? selectedColor : "#FFD597",
+            "&.Mui-selected": {
+              color: selectedColor,
+            },
+            "&:hover": {
+              color: selectedColor,
+            },
+            "&:active": {
+              color: selectedColor,
+            },
+            "& .MuiTouchRipple-root": {
+              color: selectedColor,
+            },
+          }}
         />
         <BottomNavigationAction
           component={Link}
@@ -51,7 +80,21 @@ export default function NavBar({ value, onChange }) {
           to="/account"
           label="Account"
           icon={<AccountCircleIcon />}
-          sx={{ color: "#FFD597" }}
+          sx={{
+            color: value === 2 ? selectedColor : "#FFD597",
+            "&.Mui-selected": {
+              color: selectedColor,
+            },
+            "&:hover": {
+              color: selectedColor,
+            },
+            "&:active": {
+              color: selectedColor,
+            },
+            "& .MuiTouchRipple-root": {
+              color: selectedColor,
+            },
+          }}
         />
       </BottomNavigation>
     </Paper>
