@@ -1,13 +1,15 @@
 import React, { useContext } from "react";
 import { Box, Typography, Card, CardContent, Button } from "@mui/material";
 import { useState, useEffect, useCallback } from "react";
-
+import { postEventPicture } from "../../services/event_pictures/eventPictures";
+import EventPictures from "./EventPictures";
 import Context from "../../context/UserContext";
 import {
   fetchAttendances,
   createAttendance,
 } from "../../services/events/attendances";
 import useUser from "../../hooks/useUser";
+import UploadEventPicture from "./uploadEventPicture";
 
 const EventDetail = ({ selectedEvent, onBack }) => {
   const { isAuthenticated, getUserData } = useUser();
@@ -18,6 +20,7 @@ const EventDetail = ({ selectedEvent, onBack }) => {
   const [isAttending, setIsAttending] = useState(false);
   const [userData, setUserData] = useState({});
 
+  const [hasUpdatedPhoto, setUpdatedPhoto] = useState(false);
   const handleClick = () => {
     setIsAttending(!isAttending);
     handleAttendance();
@@ -102,6 +105,10 @@ const EventDetail = ({ selectedEvent, onBack }) => {
 
         {attendances.length === 0 && <li>No attendances yet</li>}
       </ul>
+      <Typography variant="h6">Pictures From This Event </Typography>
+
+      <UploadEventPicture selectedEvent={selectedEvent} jwt={jwt} />
+      <EventPictures eventId={selectedEvent.id} />
     </Box>
   );
 };

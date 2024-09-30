@@ -6,7 +6,7 @@ const checkIn = async (eventId, userId) => {
     const response = await axios.post(`${baseURL}/events/${eventId}/checkin`, {
       userId,
     });
-    return response.data;
+    return response.data.event_pictures;
   } catch (error) {
     throw new Error(error);
   }
