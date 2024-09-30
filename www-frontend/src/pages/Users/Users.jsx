@@ -12,8 +12,9 @@ const Users = ({ searchQuery }) => {
   const [selectedUser, setSelectedUser] = useState(null);
 
   const [friends, setFriends] = useState([]);
-  const { jwt } = useContext(Context);
+
   const { isAuthenticated, getUserData } = useUser();
+  const { jwt } = useContext(Context);
 
   const addFriends = (friend) => {
     setFriends((prevFriends) => {
