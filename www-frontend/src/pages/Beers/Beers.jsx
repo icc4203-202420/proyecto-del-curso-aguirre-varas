@@ -1,48 +1,70 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
+import {
+  Stack,
+  Box,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+} from "@mui/material";
 import BeerCard from "./Beer";
-import List from "@mui/material/List";
-import ListItem from "@mui/material/ListItem";
-import Box from "@mui/material/Box";
+import BeerDetail from "./BeerDetail";
+import axios from "axios";
 
-import Stack from "@mui/material/Stack";
-
-const fetchBeers = async () => {
-  const path = import.meta.env.VITE_BACKEND_URL;
-  const url = `${path}/beers`;
-
-  try {
-    const response = await fetch(url);
-    const data = await response.json();
-    return data.beers;
-  } catch (error) {
-    console.error(error);
-    return [];
-  }
-};
-
-const Beers = () => {
+const Beers = ({ searchQuery }) => {
   const [beers, setBeers] = useState([]);
+  const [selectedBeer, setSelectedBeer] = useState(null);
+
   useEffect(() => {
     fetchBeers().then((data) => {
       setBeers(data);
     });
   }, []);
 
+  const fetchBeers = async () => {
+    const path = import.meta.env.VITE_BACKEND_URL;
+    const url = `${path}/beers`;
+
+    try {
+      const response = await axios.get(url);
+      //console.log(response);
+      return response.data.beers;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  };
+
+  const filteredBeers = beers.filter((beer) =>
+    beer.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
+  const handleBeerClick = (beer) => {
+    setSelectedBeer(beer);
+  };
+
+  const handleBackClick = () => {
+    setSelectedBeer(null);
+  };
+
   return (
-    <div>
-      <Stack sx={{ marginTop: 4 }}>
-        {beers.map((beer) => (
-          <BeerCard
-            key={beer.id}
-            name={beer.name}
-            style={beer.style}
-            rating={beer.rating}
-            sx={{ marginTop: "4px" }}
-          />
-        ))}
-      </Stack>
-    </div>
+    <>
+      {selectedBeer ? (
+        <BeerDetail selectedBeer={selectedBeer} onBack={handleBackClick} />
+      ) : (
+        <Stack spacing={2}>
+          {filteredBeers.map((beer) => (
+            <BeerCard
+              key={beer.id}
+              name={beer.name}
+              style={beer.style}
+              rating={beer.avg_rating}
+              onClick={() => handleBeerClick(beer)} // Manejar clic
+            />
+          ))}
+        </Stack>
+      )}
+    </>
   );
 };
 

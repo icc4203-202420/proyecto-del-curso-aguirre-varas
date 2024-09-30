@@ -7,15 +7,28 @@ class API::V1::EventsController < ApplicationController
   before_action :verify_jwt_token, only: [:create, :update, :destroy]
 
   def index
-    @events = Event.all
-    render json: { events: @events }, status: :ok
+    if params[:bar_id]
+      @events = Event.where(bar_id: params[:bar_id])
+    else
+      @events = Event.all
+    end
+    json_response = []
+    for event in @events
+      if event.flyer.attached?
+        json_event = event.as_json.merge({ 
+          image_url: url_for(event.flyer)})
+      else
+        json_event =   event.as_json
+      end
+      json_response.push(json_event)
+    end
+    render json: { events: json_response }, status: :ok
   end
 
   def show
-    if @event.image.attached?
+    if @event.flyer.attached?
       render json: @event.as_json.merge({ 
-        image_url: url_for(@event.image), 
-        thumbnail_url: url_for(@event.thumbnail) }),
+        image_url: url_for(@event.flyer)}),
         status: :ok
     else
       render json: { event: @event.as_json }, status: :ok
