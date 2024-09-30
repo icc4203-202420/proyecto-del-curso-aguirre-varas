@@ -1,3 +1,5 @@
+IMPORTANTE AÑADIR un .env en la carpeta www-frontend con las variables que aparecen en env.template
+
 # Proyecto de Aplicaciones Móviles - Enunciado General del Proyecto
 
 El proyecto del curso en este semestre consistirá en desarrollar una aplicación móvil para personas aficionadas a las cervezas, que frecuentan bares y eventos que se realizan en ellos. Los usuarios pueden evaluar cervezas y hacer amistades entre ellos. También pueden publicar fotos de los eventos a los que asisten en los bares, y etiquetarse.

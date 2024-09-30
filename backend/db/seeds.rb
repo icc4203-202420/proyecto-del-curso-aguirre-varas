@@ -51,4 +51,10 @@ if Rails.env.development?
     end
   end
 
+  #create bars_beer associations
+  bars.each do |bar|
+   bar.beers << Beer.all.sample(rand(1..3))
+   bar.save
+  end
+
 end

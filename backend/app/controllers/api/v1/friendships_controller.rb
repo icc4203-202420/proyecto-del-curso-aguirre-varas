@@ -15,7 +15,7 @@ class API::V1::FriendshipsController < ApplicationController
     if @friendship
       render json: { friendship: @friendship }, status: :ok
     else
-      render json: { error: "friendship not found" }, status: :not_found
+      render json: { error: "Friendship not found" }, status: :not_found
     end
   end
 
@@ -28,24 +28,27 @@ class API::V1::FriendshipsController < ApplicationController
     end
   end
 
-
   def destroy
-    @friendship.destroy
-    render json: { message: 'Friendship successfully deleted.' }
+    if @friendship
+      @friendship.destroy
+      render json: { message: 'Friendship successfully deleted.' }, status: :ok
+    else
+      render json: { error: 'Friendship not found' }, status: :not_found
+    end
   end
 
   private
 
   def set_friendship
     @friendship = Friendship.find_by(id: params[:id])
-    render json: { error: "friendship not found" }, status: :not_found unless @friendship
+    render json: { error: "Friendship not found" }, status: :not_found unless @friendship
   end
 
   def set_user
-    @user = User.find(params[:user_id]) 
+    @user = User.find(params[:user_id])
   end
 
   def friendship_params
-    params.require(:friendship).permit(:id, :friend_id, :bar_id)
+    params.require(:friendship).permit(:id, :friend_id, :event_id) 
   end
-end 
+end
