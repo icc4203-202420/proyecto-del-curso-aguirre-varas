@@ -1,3 +1,9 @@
+#IMPORTANTE
+
+##para correr el frontend en react native
+Crear carpeta .env en el directorio frontend/cheladvisor, igual que la .env.template
+`EXPO_PUBLIC_API_URL=http://localhost:3001/api/v1`
+
 IMPORTANTE AÑADIR un .env en la carpeta www-frontend con las variables que aparecen en env.template
 
 # Proyecto de Aplicaciones Móviles - Enunciado General del Proyecto
