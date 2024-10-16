@@ -3,7 +3,9 @@ import { View, StyleSheet, Text, ActivityIndicator } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { Button } from "react-native-elements";
 import axios from "axios";
-import { getItem, deleteItem } from "../util/Storage";
+import { getItem, deleteItem } from "../../util/Storage";
+
+import userService from "../../services/user";
 
 const Home = () => {
   const { user_id } = useLocalSearchParams();
@@ -25,9 +27,7 @@ const Home = () => {
   useEffect(() => {
     const initData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:3001/api/v1/users/${user_id}`
-        );
+        const response = await userService(user_id);
         setUserData(response.data);
       } catch (error: any) {
         if (error.response) {

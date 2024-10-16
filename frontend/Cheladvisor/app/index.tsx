@@ -2,9 +2,11 @@ import React, { useEffect, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { Input, Button, Text } from "react-native-elements";
 import { useRouter } from "expo-router";
-import axios, { AxiosError } from "axios";
 import { saveItem, getItem } from "../util/Storage";
 import { palette } from "../assets/palette";
+
+import loginService from "../services/login";
+import login from "../services/login";
 
 const Login = () => {
   const router = useRouter();
@@ -16,17 +18,12 @@ const Login = () => {
   const handleLogin = async () => {
     setErrorMessage("");
     try {
-      const response = await axios.post("http://localhost:3001/api/v1/login", {
-        user: {
-          email: email,
-          password,
-        },
-      });
+      const response = await loginService(email, password);
       const user = response.data.status.data.user;
       setUser(user);
       await saveItem("userId", `${user.id}`);
 
-      router.push(`/${user.id}`);
+      router.push(`/home/${user.id}`);
     } catch (error: any) {
       console.log(error);
       if (error.response) {
@@ -41,7 +38,7 @@ const Login = () => {
     const checkIsLogged = async () => {
       const userId = await getItem("userId");
       if (userId) {
-        router.push(`/${userId}`);
+        router.push(`/home/${userId}`);
       }
     };
 

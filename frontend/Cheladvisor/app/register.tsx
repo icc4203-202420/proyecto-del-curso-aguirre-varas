@@ -15,15 +15,17 @@ const Register = () => {
 
   const handleRegister = async () => {
     setLoading(true);
-    console.log("Registrando usuario");
     try {
-      const response = await axios.post("http://localhost:3001/api/v1/signup", {
-        user: {
-          username,
-          email,
-          password,
-        },
-      });
+      const response = await axios.post(
+        "{process.env.EXPO_PUBLIC_API_URL/signup",
+        {
+          user: {
+            username,
+            email,
+            password,
+          },
+        }
+      );
 
       router.push("/");
     } catch (error) {
