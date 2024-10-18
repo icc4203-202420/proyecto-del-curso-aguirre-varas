@@ -38,6 +38,7 @@ const Beers: React.FC<BeersProps> = ({ searchQuery }) => {
   const [errorMessage, setErrorMessage] = useState("");
 
   const [reviewSubmitted, setReviewSubmitted] = useState(false);
+  const [reviewedbeerId, setReviewedbeerId] = useState<number | null>(null);
 
   useEffect(() => {
     const getBeers = async () => {
@@ -77,6 +78,10 @@ const Beers: React.FC<BeersProps> = ({ searchQuery }) => {
       setErrorMessage("La reseña debe tener al menos 15 caracteres.");
       return;
     }
+    if (rating === 0 || rating > 5) {
+      setErrorMessage("Por favor, califica la cerveza.");
+      return;
+    }
 
     const reviewData = {
       beer_id: beerId,
@@ -91,6 +96,7 @@ const Beers: React.FC<BeersProps> = ({ searchQuery }) => {
       setReviewText("");
       setRating(0);
       setErrorMessage("");
+      setReviewedbeerId(beerId);
     } catch (error) {
       console.error("Error submitting review:", error);
     }
@@ -158,7 +164,9 @@ const Beers: React.FC<BeersProps> = ({ searchQuery }) => {
                       {errorMessage ? (
                         <Text style={{ color: "red" }}>{errorMessage}</Text>
                       ) : null}
-                      {reviewSubmitted && <Text>Review submitted!</Text>}
+                      {reviewSubmitted && item.id == reviewedbeerId && (
+                        <Text>Review submitted!</Text>
+                      )}
 
                       <Button
                         title="Submit Review"
