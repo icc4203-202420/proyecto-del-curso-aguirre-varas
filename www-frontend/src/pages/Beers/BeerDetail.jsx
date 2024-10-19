@@ -7,79 +7,47 @@ import {
   Button,
   Rating,
   Pagination,
+  TextField,
 } from "@mui/material";
 import BeerReviewForm from "./BeerReviewForm";
 import makeReviewService from "../../services/reviews/makeReview";
 import fetchReviewsFromUserService from "../../services/reviews/fetchReviews";
 import fetchReviewsFromBeerService from "../../services/reviews/fetchReviewsFromBeer";
 import useUser from "../../hooks/useUser";
-import { all } from "axios";
 
 const filterUserReviews = (reviews, userId) => {
   return reviews.filter((review) => review.user_id === userId);
 };
 
 const BeerDetail = ({ selectedBeer, onBack }) => {
-  const [open, setOpen] = React.useState(false);
   const { isAuthenticated, getUserData } = useUser();
   const [userBeerReviews, setUserBeerReviews] = useState([]);
-  const [beerReviews, setBeerReviews] = useState([]); // Estado para las reviews
-  const [barsBeer, setBarsBeer] = useState([]); // Estado para los bares
-  const [brewery, setBrewery] = useState(null); // Estado para la cervecería
-  /* const [reviewsState, setReviewsState] = useState({
-    isLoading: true,
-    isError: false,
-    errorMsg: "",
-  }); */
+  const [beerReviews, setBeerReviews] = useState([]);
+  const [barsBeer, setBarsBeer] = useState([]);
+  const [brewery, setBrewery] = useState(null);
+  const [reviewText, setReviewText] = useState(""); // Estado para la reseña
+  const [reviewRating, setReviewRating] = useState(0); // Estado para la calificación
   const [reviewSubmitMessage, setReviewSubmitMessage] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const reviewsPerPage = 5;
+  
 
-  const allReviewsReducer = (state, action) => {
-    switch (action.type) {
-      case "FETCH_REVIEWS_REQUEST":
-        console.log("Fetching reviews...");
-        return { ...state, isLoading: true, isError: false, errorMsg: "" };
-      case "FETCH_REVIEWS_SUCCESS":
-        console.log("Received reviewsdawdwq:", action.payload.reviews); // Línea para depuración
-        console.log("Received user reviews:", action.payload.userReviews); // Línea para depuración
-        return {
-          ...state,
-          isLoading: false,
-          reviews: action.payload.reviews,
-          userReviews: action.payload.userReviews,
-        };
-      case "FETCH_REVIEWS_FAILURE":
-        console.log("Couldn't fetch reviews:", action.payload); // Línea para depuración
-        return {
-          ...state,
-          isLoading: false,
-          isError: true,
-          errorMsg: action.payload,
-        };
-      default:
-        return state;
-    }
-  };
-
-  const [allReviewsState, dispatchAllReviews] = useReducer(allReviewsReducer, {
-    allReviews: [],
-    isLoading: true,
-    isError: false,
-    errorMsg: "",
-    userReviews: [],
-  });
-
-  const onReviewSubmit = (values) => {
+  const onReviewSubmit = () => {
     const review = {
-      text: values.text,
-      rating: values.rating,
+      text: reviewText,
+      rating: reviewRating,
       beer_id: selectedBeer.id,
     };
+    const cors = require('cors');
+    app.use(cors());
     const user = getUserData();
+
     makeReviewService(review, user.user.id)
       .then((response) => {
         setReviewSubmitMessage("Review submitted successfully");
+        // Resetea el texto de la reseña y la calificación
+        setReviewText("");
+        setReviewRating(0);
       })
       .catch((error) => {
         setReviewSubmitMessage("Couldn't submit review");
@@ -90,71 +58,34 @@ const BeerDetail = ({ selectedBeer, onBack }) => {
   useEffect(() => {
     if (isAuthenticated) {
       const user = getUserData();
-      dispatchAllReviews({ type: "FETCH_REVIEWS_REQUEST" });
       fetchReviewsFromBeerService(selectedBeer.id)
         .then((response) => {
           const reviews = response.reviews;
           const userReviews = filterUserReviews(reviews, user.user.id);
-          dispatchAllReviews({
-            type: "FETCH_REVIEWS_SUCCESS",
-            payload: { reviews, userReviews },
-          });
+          setUserBeerReviews(userReviews);
+          setBeerReviews(reviews);
         })
         .catch((error) => {
-          dispatchAllReviews({
-            type: "FETCH_REVIEWS_FAILURE",
-            payload: "Couldn't fetch reviews",
-          });
-          console.log(error);
+          console.log("Couldn't fetch reviews:", error);
         });
     }
 
-    // Verifica si una cerveza ha sido seleccionada y obtiene los bares asociados
     if (selectedBeer) {
       fetch(`http://127.0.0.1:3001/api/v1/beers/${selectedBeer.id}`)
         .then((response) => response.json())
         .then((data) => {
-          console.log("Received bars_beer data:", data.bars_beer); // Línea para depuración
-          setBarsBeer(data.bars_beer || []); // Actualiza los bares de la cerveza
-          setBrewery(data.brewery || null); // Actualiza la cervecería
+          setBarsBeer(data.bars_beer || []);
+          setBrewery(data.brewery || null);
         })
         .catch((error) => {
           console.error("Error fetching beer details:", error);
         });
     }
-
-    const timeout = setTimeout(() => {
-      setReviewSubmitMessage("");
-    }, 3000);
-    return () => clearTimeout(timeout);
-  }, [isAuthenticated, getUserData, selectedBeer, reviewSubmitMessage]);
-
-  // Paginación
-  const indexOfLastReview = currentPage * reviewsPerPage;
-  const indexOfFirstReview = indexOfLastReview - reviewsPerPage;
-  const currentReviews = userBeerReviews.slice(
-    indexOfFirstReview,
-    indexOfLastReview
-  );
-
-  const handlePageChange = (event, value) => {
-    setCurrentPage(value);
-  };
+  }, [isAuthenticated, getUserData, selectedBeer]);
 
   return (
     <Box sx={{ color: "#fff", padding: "32px" }}>
-      <Button
-        onClick={onBack}
-        variant="outlined"
-        sx={{
-          marginBottom: "16px",
-          color: "#fff",
-          borderColor: "#b1977a",
-          "&:hover": {
-            borderColor: "#fff",
-          },
-        }}
-      >
+      <Button onClick={onBack} variant="outlined" sx={{ marginBottom: "16px" }}>
         Back
       </Button>
       <Card sx={{ backgroundColor: "#fff", marginBottom: "32px" }}>
@@ -197,7 +128,6 @@ const BeerDetail = ({ selectedBeer, onBack }) => {
         </CardContent>
       </Card>
 
-      {/* Sección de bares */}
       <Box sx={{ marginBottom: "32px" }}>
         <Typography variant="h5" color="#fff" sx={{ marginBottom: "16px" }}>
           DRINK ON
@@ -206,27 +136,15 @@ const BeerDetail = ({ selectedBeer, onBack }) => {
           <Box sx={{ display: "flex", gap: "16px" }}>
             {barsBeer.length > 0 ? (
               barsBeer.map((bar) => (
-                <Card
-                  key={bar.id}
-                  sx={{
-                    backgroundColor: "#fff",
-                    color: "#331a00",
-                    width: 200,
-                    height: 200,
-                  }}
-                >
+                <Card key={bar.id} sx={{ backgroundColor: "#fff", color: "#331a00", width: 200, height: 200 }}>
                   <CardContent>
                     <Typography variant="h6">{bar.name}</Typography>
-                    <Typography variant="body2">
-                      Address ID: {bar.address_id}
-                    </Typography>
+                    <Typography variant="body2">Address ID: {bar.address_id}</Typography>
                   </CardContent>
                 </Card>
               ))
             ) : (
-              <Typography variant="h6" color="#fff">
-                No bars available for this beer.
-              </Typography>
+              <Typography variant="h6" color="#fff">No bars available for this beer.</Typography>
             )}
           </Box>
         </Box>
@@ -234,116 +152,53 @@ const BeerDetail = ({ selectedBeer, onBack }) => {
 
       {isAuthenticated && (
         <Box>
-          <Button
-            onClick={() => {
-              setOpen(true);
+          <Typography variant="h5" color="#fff">Leave a Review</Typography>
+          <TextField
+            label="Your Review"
+            multiline
+            rows={4}
+            variant="outlined"
+            value={reviewText}
+            onChange={(e) => setReviewText(e.target.value)}
+            sx={{ width: '100%', marginBottom: '16px' }}
+          />
+          <Rating
+            value={reviewRating}
+            onChange={(event, newValue) => {
+              setReviewRating(newValue);
             }}
+            precision={0.5}
+            sx={{ marginBottom: '16px', color: "#b1977a" }}
+          />
+          <Button
+            onClick={onReviewSubmit}
             sx={{
               color: "#fff",
               backgroundColor: "#b1977a",
-              "&:hover": {
-                backgroundColor: "#91673c",
-              },
+              "&:hover": { backgroundColor: "#91673c" },
             }}
           >
-            Review this beer
+            Submit Review
           </Button>
           {reviewSubmitMessage && (
-            <Typography
-              variant="body1"
-              sx={{ color: "#b1977a", marginTop: "8px" }}
-            >
+            <Typography variant="body1" sx={{ color: "#b1977a", marginTop: "8px" }}>
               {reviewSubmitMessage}
             </Typography>
           )}
-          <BeerReviewForm
-            beer={selectedBeer}
-            open={open}
-            onClose={() => {
-              setOpen(false);
-            }}
-            onSubmit={onReviewSubmit}
-          />
 
           <Box sx={{ marginTop: "32px" }}>
-            <Typography variant="h5" color="#fff">
-              YOUR REVIEWS
-            </Typography>
-            {!allReviewsState.isLoading &&
-              allReviewsState.userReviews.length > 0 &&
-              allReviewsState.userReviews.map((review) => (
-                <Card
-                  key={review.id}
-                  sx={{
-                    backgroundColor: "#331a00",
-                    color: "#fff",
-                    margin: "16px 0",
-                    padding: "16px",
-                  }}
-                >
-                  <CardContent>
-                    <Typography variant="body1">
-                      <strong>{review.user_handle || "User"}</strong>
-                    </Typography>
-                    <Typography variant="body1">{review.text}</Typography>
-                    <Typography variant="body1">
-                      Rating: {review.rating}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              ))}
-            <Typography variant="h5" color="#fff">
-              All REVIEWS
-            </Typography>
-            {allReviewsState.isLoading && <Typography>Loading...</Typography>}
-
-            {allReviewsState.isError && (
-              <Typography>{allReviewsState.errorMsg}</Typography>
-            )}
-            {!allReviewsState.isLoading &&
-              allReviewsState.reviews.length > 0 &&
-              allReviewsState.reviews.map((review) => (
-                <Card
-                  key={review.id}
-                  sx={{
-                    backgroundColor: "#331a00",
-                    color: "#fff",
-                    margin: "16px 0",
-                    padding: "16px",
-                  }}
-                >
-                  <CardContent>
-                    <Typography variant="body1">
-                      <strong>{review.user_handle || "User"}</strong>
-                    </Typography>
-                    <Typography variant="body1">{review.text}</Typography>
-                    <Typography variant="body1">
-                      Rating: {review.rating}
-                    </Typography>
-                  </CardContent>
-                </Card>
-              ))}
-            {/* Paginación */}
-            <Box
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                marginTop: "16px",
-              }}
-            >
-              {allReviewsState.reviews &&
-                allReviewsState.reviews.length > 0 &&
-                allReviewsState.reviews.length > reviewsPerPage && (
-                  <Pagination
-                    count={Math.ceil(
-                      allReviewsState.reviews.length / reviewsPerPage
-                    )}
-                    page={currentPage}
-                    onChange={handlePageChange}
-                    color="primary"
-                  />
-                )}
-            </Box>
+            <Typography variant="h5" color="#fff">YOUR REVIEWS</Typography>
+            {userBeerReviews.map((review) => (
+              <Card key={review.id} sx={{ backgroundColor: "#331a00", color: "#fff", margin: "16px 0", padding: "16px" }}>
+                <CardContent>
+                  <Typography variant="body1">
+                    <strong>{review.user_handle || "User"}</strong>
+                  </Typography>
+                  <Typography variant="body1">{review.text}</Typography>
+                  <Typography variant="body1">Rating: {review.rating}</Typography>
+                </CardContent>
+              </Card>
+            ))}
           </Box>
         </Box>
       )}
