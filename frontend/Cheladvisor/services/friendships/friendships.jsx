@@ -8,7 +8,7 @@ export const fetchFriendships = async (userId, token) => {
         Authorization: `${token}`,
       },
     });
-    return response.data;
+    return response.data.friendships;
   } catch (error) {
     throw new Error(error);
   }

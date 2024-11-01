@@ -11,6 +11,11 @@ import { Card } from "react-native-elements";
 
 import { getItem } from "../../util/Storage";
 import { fetchUsers } from "../../services/users/users";
+import {
+  fetchFriendships,
+  createFriendship,
+} from "../../services/friendships/friendships";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 type User = {
   id: number;
@@ -24,6 +29,15 @@ type User = {
   handle: string;
 };
 
+type Friend = {
+  created_at: string;
+  event_id: number;
+  friend_id: number;
+  id: number;
+  updated_at: string;
+  user_id: number;
+};
+
 function Users({ searchQuery }: { searchQuery: string }) {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
@@ -31,11 +45,11 @@ function Users({ searchQuery }: { searchQuery: string }) {
   const [errorMessage, setErrorMessage] = useState("");
   const [userId, setUserId] = useState<string | null>(null);
 
+  const [friends, setFriends] = useState<Friend[]>([]);
+  const [token, setToken] = useState<string | null>(null);
+
   const filterUsers = (users: User[], searchQuery: string) => {
     return users.filter((user) => {
-      console.log("User:", user);
-      console.log(userId);
-      console.log(user.id.toString() !== userId);
       return (
         user.id.toString() !== userId &&
         (user.first_name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -46,24 +60,53 @@ function Users({ searchQuery }: { searchQuery: string }) {
     });
   };
 
+  const addFriend = async (
+    friendId: number,
+    token: string | null,
+    event_id: number
+  ) => {
+    try {
+      await createFriendship(userId, token, event_id, friendId);
+      const friendsResponse = await fetchFriendships(userId, token);
+      setFriends(friendsResponse);
+    } catch (error) {
+      console.error("Error adding friend:", error);
+    }
+  };
   useEffect(() => {
-    const getUserId = async () => {
-      const userId = await getItem("userId");
-      setUserId(userId);
-    };
-    const getUsers = async () => {
+    const fetchData = async () => {
       try {
-        const response = await fetchUsers();
-        setUsers(response);
+        const [fetchedToken, fetchedUserId] = await Promise.all([
+          getItem("token"),
+          getItem("userId"),
+        ]);
+
+        if (!fetchedToken || !fetchedUserId) {
+          throw new Error("Token or userId is missing.");
+        }
+
+        setToken(fetchedToken);
+        setUserId(fetchedUserId);
+
+        const usersResponse = await fetchUsers();
+        setUsers(usersResponse);
+        console.log(fetchedUserId, fetchedToken);
+
+        const friendsResponse = await fetchFriendships(
+          fetchedUserId,
+          fetchedToken
+        );
+        console.log(friendsResponse);
+        setFriends(friendsResponse);
       } catch (error) {
-        setErrorMessage("Error fetching users");
-        console.error("Error fetching users:", error);
+        setErrorMessage("An error occurred while fetching data.");
+        console.error("Error:", error);
       } finally {
         setLoading(false);
       }
     };
-    getUserId();
-    getUsers();
+
+    fetchData();
   }, []);
 
   const fileteredUsers = filterUsers(users, searchQuery);
@@ -89,11 +132,21 @@ function Users({ searchQuery }: { searchQuery: string }) {
                   {item.first_name} {item.last_name}
                 </Text>
                 {expandedUserId === item.id && (
-                  <View>
-                    <Text>Email: {item.email}</Text>
-                    <Text>Handle: {item.handle}</Text>
-                    <Text>Age: {item.age}</Text>
-                  </View>
+                  <>
+                    <View>
+                      <Text>Email: {item.email}</Text>
+                      <Text>Handle: {item.handle}</Text>
+                      <Text>Age: {item.age}</Text>
+                    </View>
+                    {friends.some((friend) => friend.friend_id === item.id) ? (
+                      <Text>Friend</Text>
+                    ) : (
+                      <Button
+                        title="Add friend"
+                        onPress={() => addFriend(item.id, token, 1)}
+                      />
+                    )}
+                  </>
                 )}
               </TouchableOpacity>
             </Card>

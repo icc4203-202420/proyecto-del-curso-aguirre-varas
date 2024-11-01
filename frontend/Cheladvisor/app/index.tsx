@@ -22,7 +22,8 @@ const Login = () => {
       const user = response.data.status.data.user;
       setUser(user);
       await saveItem("userId", `${user.id}`);
-
+      const token = response.headers.authorization;
+      await saveItem("token", token);
       router.push(`/home/${user.id}`);
     } catch (error: any) {
       console.log(error);
