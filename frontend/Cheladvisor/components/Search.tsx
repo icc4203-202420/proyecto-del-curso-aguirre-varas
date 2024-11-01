@@ -4,6 +4,7 @@ import { Tab } from "react-native-elements";
 import { useState } from "react";
 import Beers from "../components/Beers/BeersSearch"; // Asegúrate de que la ruta es correcta
 import Bars from "../components/Bars/BarSearch"; // Importa el componente de Bares
+import Users from "../components/Users/UserSearch"; // Importa el componente de Usuarios
 
 function Search({ searchQuery }: { searchQuery: string }) {
   const [filter, setFilter] = useState(0);
@@ -17,9 +18,9 @@ function Search({ searchQuery }: { searchQuery: string }) {
       case 0:
         return <Beers searchQuery={searchQuery} />;
       case 1:
-        return <Bars searchQuery={searchQuery} />; // Asegúrate de que el componente Bars acepte searchQuery
+        return <Bars searchQuery={searchQuery} />;
       case 2:
-        return <Users searchQuery={searchQuery} />; // Asegúrate de que el componente Users acepte searchQuery
+        return <Users searchQuery={searchQuery} />;
       default:
         return <Beers searchQuery={searchQuery} />;
     }

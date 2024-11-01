@@ -1,5 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { View, StyleSheet, Text, ActivityIndicator, ScrollView } from "react-native";
+import {
+  View,
+  StyleSheet,
+  Text,
+  ActivityIndicator,
+  ScrollView,
+} from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { Button } from "react-native-elements";
 import axios from "axios";
@@ -36,6 +42,7 @@ const Home = () => {
     const initData = async () => {
       try {
         const response = await userService(user_id);
+        console.log(response.data);
         setUserData(response.data);
       } catch (error: any) {
         if (error.response) {
@@ -68,10 +75,14 @@ const Home = () => {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.logoutContainer}>
-        <Button title="Log Out" onPress={handleLogOut} buttonStyle={styles.logoutButton} />
+        <Button
+          title="Log Out"
+          onPress={handleLogOut}
+          buttonStyle={styles.logoutButton}
+        />
       </View>
 
-      <Text style={styles.welcomeText}>Welcome {userData?.name}!</Text>
+      <Text style={styles.welcomeText}>Welcome {userData.handle}!</Text>
 
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>News from Friends</Text>
@@ -79,7 +90,6 @@ const Home = () => {
 
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>Upcoming Events</Text>
-        
       </View>
     </ScrollView>
   );
@@ -98,7 +108,6 @@ const styles = StyleSheet.create({
     marginTop: 90,
     marginBottom: 30,
     color: "#fff",
-    
   },
   sectionContainer: {
     marginBottom: 40,
@@ -117,12 +126,12 @@ const styles = StyleSheet.create({
   logoutContainer: {
     position: "absolute",
     top: 20,
-    right: 20, 
+    right: 20,
   },
   logoutButton: {
     backgroundColor: palette.lager,
-    paddingHorizontal: 10, 
-    paddingVertical: 5, 
+    paddingHorizontal: 10,
+    paddingVertical: 5,
   },
 });
 
