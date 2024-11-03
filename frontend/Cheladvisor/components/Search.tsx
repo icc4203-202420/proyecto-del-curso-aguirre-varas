@@ -1,12 +1,11 @@
-// src/screens/Search.tsx
-
 import React, { useState } from "react";
-import { View } from "react-native";
+import { View, StyleSheet } from "react-native";
 import { Tab } from "react-native-elements";
 import Beers from "../components/Beers/BeersSearch";
 import Bars from "../components/Bars/BarSearch";
 import Users from "../components/Users/UserSearch";
 import Events from "../components/Events/EventSearch";
+import { palette } from "../assets/palette";
 
 function Search({ searchQuery }: { searchQuery: string }) {
   const [filter, setFilter] = useState(0);
@@ -31,17 +30,51 @@ function Search({ searchQuery }: { searchQuery: string }) {
   };
 
   return (
-    <View style={{ flex: 1 }}>
-      <Tab value={filter} onChange={handleFilterChange}>
-        <Tab.Item title="Beers" />
-        <Tab.Item title="Bars" />
-        <Tab.Item title="Users" />
-        <Tab.Item title="Events" />
+    <View style={styles.container}>
+      <Tab
+        value={filter}
+        onChange={handleFilterChange}
+        indicatorStyle={{ backgroundColor: "white" }} // Indicador blanco
+      >
+        <Tab.Item
+          title="Beers"
+          titleStyle={styles.tabTitle}
+          buttonStyle={styles.tabButton}
+        />
+        <Tab.Item
+          title="Bars"
+          titleStyle={styles.tabTitle}
+          buttonStyle={styles.tabButton}
+        />
+        <Tab.Item
+          title="Users"
+          titleStyle={styles.tabTitle}
+          buttonStyle={styles.tabButton}
+        />
+        <Tab.Item
+          title="Events"
+          titleStyle={styles.tabTitle}
+          buttonStyle={styles.tabButton}
+        />
       </Tab>
 
       {renderFilteredContent()}
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: palette.background, 
+  },
+  tabTitle: {
+    color: "white",
+    fontSize:13,
+  },
+  tabButton: {
+    backgroundColor: palette.amber, 
+  },
+});
 
 export default Search;
