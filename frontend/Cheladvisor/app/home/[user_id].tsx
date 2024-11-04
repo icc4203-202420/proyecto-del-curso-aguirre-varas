@@ -47,9 +47,12 @@ const Home = () => {
       } catch (error: any) {
         if (error.response) {
           await deleteItem("userId");
+          await deleteItem("token");
           router.push("/");
           setErrorMessage("Error al obtener los datos del usuario");
         } else {
+          await deleteItem("userId");
+          await deleteItem("token");
           setErrorMessage("Error de conexión");
         }
       } finally {

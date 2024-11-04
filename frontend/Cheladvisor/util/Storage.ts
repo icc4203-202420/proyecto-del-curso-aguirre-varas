@@ -52,3 +52,20 @@ export const deleteItem = async (key: string) => {
     }
   }
 };
+
+export const clearData = async () => {
+  if (isWeb) {
+    try {
+      await AsyncStorage.clear();
+    } catch (e) {
+      console.error("Error clearing data from AsyncStorage", e);
+    }
+  } else {
+    try {
+      await SecureStore.deleteItemAsync("userId");
+      await SecureStore.deleteItemAsync("token");
+    } catch (e) {
+      console.error("Error clearing data from SecureStore", e);
+    }
+  }
+};

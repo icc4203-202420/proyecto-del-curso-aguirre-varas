@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, StyleSheet } from "react-native";
 import { Input, Button, Text } from "react-native-elements";
 import { useRouter } from "expo-router";
-import { saveItem, getItem } from "../util/Storage";
+import { saveItem, getItem, clearData } from "../util/Storage";
 import { palette } from "../assets/palette";
 
 import loginService from "../services/login";
@@ -27,6 +27,7 @@ const Login = () => {
       router.push(`/home/${user.id}`);
     } catch (error: any) {
       console.log(error);
+      await clearData();
       if (error.response) {
         setErrorMessage("Credenciales incorrectas");
       } else {
