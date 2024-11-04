@@ -6,8 +6,7 @@ export const fetchEventPictures = async (eventId) => {
     const response = await axios.get(
       `${baseUrl}/events/${eventId}/event_pictures`
     );
-    console.log(response.data);
-    return response.data;
+    return response.data.event_pictures;
   } catch (error) {
     throw new Error(error);
   }

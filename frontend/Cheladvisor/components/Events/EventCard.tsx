@@ -7,6 +7,8 @@ import {
   fetchAttendances,
 } from "../../services/events/attendances"; // Importa createAttendance
 import { getItem } from "../../util/Storage"; // Importa getItem
+import { useRouter } from "expo-router";
+import { Button } from "react-native-elements";
 interface Event {
   id: number;
   name: string;
@@ -24,6 +26,8 @@ const EventCard: React.FC<EventCardProps> = ({ item }) => {
   const [isAttending, setIsAttending] = useState(false);
 
   const toggleExpand = () => setExpanded(!expanded);
+
+  const router = useRouter();
 
   const fecthAttendances = async () => {
     try {
@@ -64,6 +68,10 @@ const EventCard: React.FC<EventCardProps> = ({ item }) => {
     fecthAttendances();
   }, []);
 
+  const infoPressed = () => {
+    router.navigate(`/events/${item.id}`);
+  };
+
   return (
     <TouchableOpacity onPress={toggleExpand}>
       <Card>
@@ -87,8 +95,13 @@ const EventCard: React.FC<EventCardProps> = ({ item }) => {
                 {/* Solo mostramos el check o la X */}
                 {isAttending ? <Text style={styles.checkmark}>✔️</Text> : null}
               </TouchableOpacity>
+
               <Text style={styles.attendanceText}>Asistir al evento</Text>
             </View>
+
+            <Text onPress={infoPressed} style={styles.title}>
+              Ir a pagina del evento
+            </Text>
           </View>
         )}
       </Card>
