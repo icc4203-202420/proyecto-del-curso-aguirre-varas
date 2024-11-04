@@ -13,10 +13,10 @@ interface Event {
 
 interface EventsProps {
   searchQuery: string;
-  token: string;  // Añadido: token de autenticación
+  token: string; // Añadido: token de autenticación
 }
 
-const Events: React.FC<EventsProps> = ({ searchQuery, token }) => {
+const Events: React.FC<EventsProps> = ({ searchQuery }) => {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
@@ -56,7 +56,7 @@ const Events: React.FC<EventsProps> = ({ searchQuery, token }) => {
         <FlatList
           data={filteredEvents}
           keyExtractor={(item) => item.id.toString()}
-          renderItem={({ item }) => <EventCard item={item} token={token} />}
+          renderItem={({ item }) => <EventCard item={item} />}
         />
       )}
     </View>

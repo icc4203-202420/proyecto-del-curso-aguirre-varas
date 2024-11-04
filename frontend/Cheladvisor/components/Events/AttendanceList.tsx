@@ -1,7 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, Button, StyleSheet } from "react-native";
-import fetchAttendances from "../../services/events/attendances";
-import checkIn from "../../services/events/checkIn";
+import {
+  fetchAttendances,
+  createAttendance,
+} from "../../services/events/attendances";
+import { checkIn } from "../../services/events/checkIn";
+import { getItem } from "../../util/Storage";
 
 type Attendance = {
   id: number;
@@ -9,7 +13,13 @@ type Attendance = {
   check_in_time: string;
 };
 
-function AttendanceList({ user_id, event_id }: { user_id: string; event_id: string }) {
+function AttendanceList({
+  user_id,
+  event_id,
+}: {
+  user_id: string;
+  event_id: string;
+}) {
   const [attendances, setAttendances] = useState<Attendance[]>([]);
   const [userCheckedIn, setUserCheckedIn] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -18,7 +28,8 @@ function AttendanceList({ user_id, event_id }: { user_id: string; event_id: stri
   useEffect(() => {
     const loadData = async () => {
       try {
-        const attendanceList = await fetchAttendances(event_id);
+        const token = await getItem("token");
+        const attendanceList = await fetchAttendances(event_id, token);
         const isUserCheckedIn = attendanceList.some(
           (attendance) => attendance.user_id === parseInt(user_id)
         );
@@ -36,10 +47,14 @@ function AttendanceList({ user_id, event_id }: { user_id: string; event_id: stri
 
   const handleCheckIn = async () => {
     try {
+      console.log("dwadwa");
+      const token = await getItem("token");
+      console.log(token);
+      await createAttendance(parseInt(event_id), token);
       await checkIn(event_id, user_id);
       setUserCheckedIn(true);
       // Refetch attendance list after check-in
-      const updatedList = await fetchAttendances(event_id);
+      const updatedList = await fetchAttendances(event_id, token);
       setAttendances(updatedList);
     } catch (error) {
       setErrorMessage("Error during check-in");

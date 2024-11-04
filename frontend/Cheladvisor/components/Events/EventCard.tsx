@@ -1,9 +1,12 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card } from "react-native-elements";
 import { Text, TouchableOpacity, View, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome"; // Asegúrate de tener instalada esta librería
-import { createAttendance } from "../../services/events/attendances"; // Importa createAttendance
-
+import {
+  createAttendance,
+  fetchAttendances,
+} from "../../services/events/attendances"; // Importa createAttendance
+import { getItem } from "../../util/Storage"; // Importa getItem
 interface Event {
   id: number;
   name: string;
@@ -16,16 +19,36 @@ interface EventCardProps {
   token: string;
 }
 
-const EventCard: React.FC<EventCardProps> = ({ item, token }) => {
+const EventCard: React.FC<EventCardProps> = ({ item }) => {
   const [expanded, setExpanded] = useState(false);
   const [isAttending, setIsAttending] = useState(false);
 
   const toggleExpand = () => setExpanded(!expanded);
 
+  const fecthAttendances = async () => {
+    try {
+      const token = await getItem("token");
+      const userId = await getItem("userId");
+      if (!userId) {
+        throw new Error("User ID not found");
+      }
+      const attendances = await fetchAttendances(item.id, token);
+      console.log(attendances);
+      setIsAttending(
+        attendances.some(
+          (attendance) => attendance.user_id === parseInt(userId)
+        )
+      );
+    } catch (error) {
+      console.error("Error fetching attendance list", error);
+    }
+  };
+
   const handleAttendance = async () => {
     try {
+      const token = await getItem("token");
       await createAttendance(item.id, token);
-      setIsAttending((prev) => !prev); // Cambia el estado al tocarlo
+      setIsAttending(true); // Cambia el estado al tocarlo
     } catch (error) {
       console.error("Error marking attendance:", error);
     }
@@ -36,6 +59,10 @@ const EventCard: React.FC<EventCardProps> = ({ item, token }) => {
     month: "long",
     day: "numeric",
   });
+
+  useEffect(() => {
+    fecthAttendances();
+  }, []);
 
   return (
     <TouchableOpacity onPress={toggleExpand}>
@@ -52,7 +79,10 @@ const EventCard: React.FC<EventCardProps> = ({ item, token }) => {
             <View style={styles.attendanceContainer}>
               <TouchableOpacity
                 onPress={handleAttendance}
-                style={[styles.attendanceButton, isAttending ? styles.attending : styles.notAttending]}
+                style={[
+                  styles.attendanceButton,
+                  isAttending ? styles.attending : styles.notAttending,
+                ]}
               >
                 {/* Solo mostramos el check o la X */}
                 {isAttending ? <Text style={styles.checkmark}>✔️</Text> : null}
@@ -95,7 +125,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#4CAF50",
   },
   notAttending: {
-    backgroundColor: "white", 
+    backgroundColor: "white",
   },
   checkmark: {
     fontSize: 20,

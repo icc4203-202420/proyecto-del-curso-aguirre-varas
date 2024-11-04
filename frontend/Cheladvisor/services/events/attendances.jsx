@@ -14,19 +14,18 @@ export const fetchAttendances = async (eventId, token) => {
   }
 };
 
-
-export const createAttendance = async (eventId: number, token: string) => {
+export const createAttendance = async (eventId: number, token) => {
   try {
     const response = await axios.post(
       `http://localhost:3001/api/v1/events/${eventId}/attendances`, // Asegúrate de que esta URL sea correcta
       {},
       {
         headers: {
-          Authorization: `Bearer ${token}`, // Agrega el token aquí
+          Authorization: `${token}`,
         },
       }
     );
-    return response.data; // Procesa la respuesta según sea necesario
+    return response.data;
   } catch (error) {
     throw new Error(`Error marking attendance: ${error}`);
   }
