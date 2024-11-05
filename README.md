@@ -1,5 +1,7 @@
 #IMPORTANTE
 
+brew services start redis
+
 ##para correr el frontend en react native
 Crear carpeta .env en el directorio frontend/cheladvisor, igual que la .env.template
 `EXPO_PUBLIC_API_URL=http://localhost:3001/api/v1`

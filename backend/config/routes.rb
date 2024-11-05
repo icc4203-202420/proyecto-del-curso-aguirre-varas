@@ -27,7 +27,6 @@ Rails.application.routes.draw do
       resources :bars do
         resources :events, only: [:index] do
           resources :attendances, only: [:index, :create]
-         
         end
       end
       resources :events do
@@ -35,6 +34,9 @@ Rails.application.routes.draw do
          post 'check_in', to: 'attendances#check_in'
           get 'all_check_ins', to: 'attendances#all_check_ins'
         resources :event_pictures, only: [:index, :create, :destroy]
+        member do
+          post :generate_summary
+        end
       end
       resources :users do
         resources :reviews, only: [:index]
