@@ -1,6 +1,7 @@
 #IMPORTANTE
 
 brew services start redis
+bundle exec sidekiq
 
 ##para correr el frontend en react native
 Crear carpeta .env en el directorio frontend/cheladvisor, igual que la .env.template
