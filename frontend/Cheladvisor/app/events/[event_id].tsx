@@ -6,6 +6,8 @@ import { useRouter } from "expo-router";
 import { getItem } from "expo-secure-store";
 import UploadEventPicture from "../../components/Events/UploadEvent";
 
+import EventVideo from "../../components/Events/EventVideo";
+
 import {
   fetchEventPictures,
   postEventPicture,
@@ -68,6 +70,7 @@ const EventPage: React.FC = () => {
       </View>
       <View style={styles.container}>
         <Text>Event {event_id} Page</Text>
+        <EventVideo eventId={event_id} />
       </View>
       {loading && <Text>Loading...</Text>}
       {!loading && (
@@ -79,8 +82,8 @@ const EventPage: React.FC = () => {
             data={eventPictures}
             renderItem={({ item }) => (
               <View>
+                <Text style={styles.tilte1}>{item.user.handle}</Text>
                 <Text>{item.description}</Text>
-                <Text>{item.user.handle}</Text>
                 <Image
                   source={{
                     uri: item.image_url,
