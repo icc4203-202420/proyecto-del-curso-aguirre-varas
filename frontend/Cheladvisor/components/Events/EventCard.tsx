@@ -9,6 +9,7 @@ import {
 import { getItem } from "../../util/Storage"; // Importa getItem
 import { useRouter } from "expo-router";
 import { Button } from "react-native-elements";
+import { palette } from "../../assets/palette";
 interface Event {
   id: number;
   name: string;
@@ -112,6 +113,7 @@ const EventCard: React.FC<EventCardProps> = ({ item }) => {
 const styles = StyleSheet.create({
   title: {
     fontSize: 16,
+    color:palette.amber
   },
   detailsContainer: {
     marginTop: 10,

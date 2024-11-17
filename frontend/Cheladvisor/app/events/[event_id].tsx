@@ -18,6 +18,7 @@ import ReviewList from "../../components/Reviews/ReviewList";
 import { ScrollView } from "react-native";
 import { FlatList } from "react-native";
 import { Image } from "react-native";
+import { palette } from "../../assets/palette";
 
 type EventPicture = {
   created_at: string;
@@ -58,32 +59,32 @@ const EventPage: React.FC = () => {
   const uploadPicture = async () => {};
 
   return (
-    <View>
+    <View style={styles.back}>
       <View style={styles.header}>
         <Button
           type="clear"
-          icon={{ name: "arrow-back", color: "black" }}
+          icon={{ name: "arrow-back", color: "white" }}
           onPress={() => {
             router.navigate(`/home/${userId}`);
           }}
         ></Button>
       </View>
       <View style={styles.container}>
-        <Text>Event {event_id} Page</Text>
+        <Text style={styles.Title}>Event {event_id} Page</Text>
         <EventVideo eventId={event_id} />
       </View>
-      {loading && <Text>Loading...</Text>}
+      {loading && <Text style={styles.Title}>Loading...</Text>}
       {!loading && (
         <View style={styles.container}>
           <Text style={styles.tilte1}>Pictures</Text>
           <UploadEventPicture selectedEvent={event_id} />
-          {eventPictures.length === 0 && <Text>No pictures</Text>}
+          {eventPictures.length === 0 && <Text style={styles.title2}>No pictures</Text>}
           <FlatList
             data={eventPictures}
             renderItem={({ item }) => (
               <View>
                 <Text style={styles.tilte1}>{item.user.handle}</Text>
-                <Text>{item.description}</Text>
+                <Text style={styles.title2}>{item.description}</Text>
                 <Image
                   source={{
                     uri: item.image_url,
@@ -101,25 +102,34 @@ const EventPage: React.FC = () => {
 };
 
 const styles = StyleSheet.create({
+  back:{
+    backgroundColor: palette.background,
+    height:"100%"
+  },
   container: {
     margin: 10,
+  },
+  Title: {
+    fontSize:30,
+    fontWeight: "bold",
+    color:palette.lager
   },
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    backgroundColor: "#f0f0f0",
+    backgroundColor: palette.components,
     padding: 10,
   },
   tilte1: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10,
+    color:"white"
   },
-  tilte2: {
+  title2: {
     fontSize: 20,
-    fontWeight: "bold",
     marginBottom: 10,
-    marginTop: 10,
+    color:"white"
   },
 });
 

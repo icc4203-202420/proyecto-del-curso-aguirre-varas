@@ -12,6 +12,7 @@ function Search({ searchQuery }: { searchQuery: string }) {
 
   const handleFilterChange = (newValue: number) => {
     setFilter(newValue);
+    styles.stitle;
   };
 
   const renderFilteredContent = () => {
@@ -34,7 +35,7 @@ function Search({ searchQuery }: { searchQuery: string }) {
       <Tab
         value={filter}
         onChange={handleFilterChange}
-        indicatorStyle={{ backgroundColor: "white" }} // Indicador blanco
+        indicatorStyle={{ backgroundColor: palette.lager }} // Indicador blanco
       >
         <Tab.Item
           title="Beers"
@@ -73,7 +74,7 @@ const styles = StyleSheet.create({
     fontSize:13,
   },
   tabButton: {
-    backgroundColor: palette.amber, 
+    backgroundColor: palette.components, 
   },
 });
 
