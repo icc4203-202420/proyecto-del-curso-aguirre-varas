@@ -16,6 +16,7 @@ import ReviewList from "../../components/Reviews/ReviewList";
 import { ScrollView } from "react-native";
 import { FlatList } from "react-native";
 import { Image } from "react-native";
+import { palette } from "../../assets/palette";
 
 type EventPicture = {
   created_at: string;
@@ -56,31 +57,31 @@ const EventPage: React.FC = () => {
   const uploadPicture = async () => {};
 
   return (
-    <View>
+    <ScrollView style={styles.scroll}>
       <View style={styles.header}>
         <Button
           type="clear"
-          icon={{ name: "arrow-back", color: "black" }}
+          icon={{ name: "arrow-back", color: "white" }}
           onPress={() => {
             router.navigate(`/home/${userId}`);
           }}
         ></Button>
       </View>
       <View style={styles.container}>
-        <Text>Event {event_id} Page</Text>
+        <Text style={styles.title}>Event {event_id} Page</Text>
       </View>
       {loading && <Text>Loading...</Text>}
       {!loading && (
         <View style={styles.container}>
           <Text style={styles.tilte1}>Pictures</Text>
           <UploadEventPicture selectedEvent={event_id} />
-          {eventPictures.length === 0 && <Text>No pictures</Text>}
+          {eventPictures.length === 0 && <Text style={styles.body}>No pictures</Text>}
           <FlatList
             data={eventPictures}
             renderItem={({ item }) => (
               <View>
-                <Text>{item.description}</Text>
-                <Text>{item.user.handle}</Text>
+                <Text style={styles.body}>{item.description}</Text>
+                <Text style={styles.body}>{item.user.handle}</Text>
                 <Image
                   source={{
                     uri: item.image_url,
@@ -93,7 +94,7 @@ const EventPage: React.FC = () => {
           />
         </View>
       )}
-    </View>
+    </ScrollView>
   );
 };
 
@@ -104,13 +105,22 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    backgroundColor: "#f0f0f0",
+    backgroundColor: palette.background,
     padding: 10,
+  },
+  body:{
+    color:"white",
+  },
+  title:{
+    fontSize:32,
+    marginVertical:15,
+    color:palette.lager,
   },
   tilte1: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10,
+    color:"white",
   },
   tilte2: {
     fontSize: 20,
@@ -118,6 +128,9 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 10,
   },
+  scroll:{
+    backgroundColor:palette.background,
+  }
 });
 
 export default EventPage;

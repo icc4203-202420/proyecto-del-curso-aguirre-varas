@@ -23,7 +23,7 @@ function Search({ searchQuery }: { searchQuery: string }) {
       case 2:
         return <Users searchQuery={searchQuery} />;
       case 3:
-        return <Events searchQuery={searchQuery} />;
+        return <Events searchQuery={searchQuery} token={"Bearer eyJhbGciOiJIUzI1NiJ9.eyJqdGkiOiI1NDNlY2MzMC02NmVjLTQ1NmUtYWQ4Mi00M2MwOGNmMjQxOTciLCJzdWIiOiIxNiIsInNjcCI6InVzZXIiLCJhdWQiOm51bGwsImlhdCI6MTczMDc2Mzk2NCwiZXhwIjoxNzMwODUwMzY0fQ.xsj-waSmdOfdYMCURfhuEBLI1AJPHE4_nxcLF2Rj2sA"} />;
       default:
         return <Beers searchQuery={searchQuery} />;
     }
@@ -34,7 +34,6 @@ function Search({ searchQuery }: { searchQuery: string }) {
       <Tab
         value={filter}
         onChange={handleFilterChange}
-        indicatorStyle={{ backgroundColor: "white" }} // Indicador blanco
       >
         <Tab.Item
           title="Beers"

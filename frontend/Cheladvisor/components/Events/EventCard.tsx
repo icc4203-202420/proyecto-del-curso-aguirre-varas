@@ -9,6 +9,7 @@ import {
 import { getItem } from "../../util/Storage"; // Importa getItem
 import { useRouter } from "expo-router";
 import { Button } from "react-native-elements";
+import { palette } from "../../assets/palette";
 interface Event {
   id: number;
   name: string;
@@ -74,7 +75,7 @@ const EventCard: React.FC<EventCardProps> = ({ item }) => {
 
   return (
     <TouchableOpacity onPress={toggleExpand}>
-      <Card>
+      <Card style={styles.card}>
         <Card.Title style={styles.title}>{item.name}</Card.Title>
         <Card.Divider />
         {expanded && (
@@ -99,7 +100,7 @@ const EventCard: React.FC<EventCardProps> = ({ item }) => {
               <Text style={styles.attendanceText}>Asistir al evento</Text>
             </View>
 
-            <Text onPress={infoPressed} style={styles.title}>
+            <Text onPress={infoPressed} style={styles.title2}>
               Ir a pagina del evento
             </Text>
           </View>
@@ -112,6 +113,14 @@ const EventCard: React.FC<EventCardProps> = ({ item }) => {
 const styles = StyleSheet.create({
   title: {
     fontSize: 16,
+  },
+  title2: {
+    fontSize: 16,
+    color:palette.amber,
+    marginTop:6,
+  },
+  card:{
+    backgroundColor:palette.lager,
   },
   detailsContainer: {
     marginTop: 10,

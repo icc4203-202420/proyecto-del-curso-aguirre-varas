@@ -14,19 +14,19 @@ export const fetchAttendances = async (eventId, token) => {
   }
 };
 
-export const createAttendance = async (eventId: number, token) => {
+export const createAttendance = async (eventId, token) => {
+  const baseURL = process.env.EXPO_PUBLIC_API_URL;
+  console.log(token);
   try {
     const response = await axios.post(
-      `http://localhost:3001/api/v1/events/${eventId}/attendances`, // Asegúrate de que esta URL sea correcta
+      `${baseURL}/events/${eventId}/attendances`,
       {},
-      {
-        headers: {
-          Authorization: `${token}`,
-        },
-      }
+      { headers: { Authorization: `${token}` } }
     );
+    console.log(response);
+    
     return response.data;
   } catch (error) {
-    throw new Error(`Error marking attendance: ${error}`);
+    throw new AxiosError(error);
   }
 };

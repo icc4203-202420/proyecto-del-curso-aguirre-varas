@@ -11,6 +11,7 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { postEventPicture } from "../../services/event_pictures/eventPictures";
 import { getItem } from "../../util/Storage";
+import { palette } from "../../assets/palette";
 
 const UploadEventPicture = ({
   selectedEvent,
@@ -87,7 +88,7 @@ const UploadEventPicture = ({
             style={{
               width: 300,
               padding: 20,
-              backgroundColor: "white",
+              backgroundColor: "#db9",
               borderRadius: 10,
             }}
           >
@@ -95,7 +96,7 @@ const UploadEventPicture = ({
               Upload Picture
             </Text>
             <TouchableOpacity onPress={handleFileChange}>
-              <Text style={{ color: "blue", marginBottom: 10 }}>
+              <Text style={{ color: palette.amber, marginBottom: 10 }}>
                 Choose Picture
               </Text>
             </TouchableOpacity>
@@ -114,8 +115,8 @@ const UploadEventPicture = ({
             <View
               style={{ flexDirection: "row", justifyContent: "space-between" }}
             >
-              <Button title="Cancel" onPress={handleClose} />
-              <Button title="Upload" onPress={handleUpload} />
+              <Button color={palette.amber} title="Cancel" onPress={handleClose} />
+              <Button color={palette.amber} title="Upload" onPress={handleUpload} />
             </View>
           </View>
         </View>

@@ -3,6 +3,7 @@ import { View, Text } from "react-native";
 import fetchReviewsFromUser from "../../services/reviews/fetchReviews";
 import fetchReviewsFromBeer from "../../services/reviews/fetchReviewsFromBeer";
 import { StyleSheet } from "react-native";
+import { palette } from "../../assets/palette";
 
 /*{
             "id": 1,
@@ -136,12 +137,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
-    margin: 10,
+    marginTop: 15,
+    color:palette.lager,
+    
   },
   review: {
     margin: 10,
     padding: 10,
-    backgroundColor: "#f9c2ff",
+    backgroundColor:"#db9",
     borderRadius: 10,
   },
 });

@@ -87,13 +87,7 @@ const Home = () => {
 
       <Text style={styles.welcomeText}>Welcome {userData.handle}!</Text>
 
-      <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>News from Friends</Text>
-      </View>
-
-      <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>Upcoming Events</Text>
-      </View>
+      
     </ScrollView>
   );
 };
@@ -110,7 +104,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 90,
     marginBottom: 30,
-    color: "#fff",
+    color:palette.lager,
   },
   sectionContainer: {
     marginBottom: 40,
@@ -119,7 +113,7 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     marginBottom: 10,
-    color: "#fff",
+    color: palette.lager,
   },
   error: {
     color: "red",

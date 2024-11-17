@@ -10,6 +10,7 @@ import fetchBeer from "../../services/beers/fetchBeer";
 import { View, StyleSheet } from "react-native";
 import ReviewList from "../../components/Reviews/ReviewList";
 import { ScrollView } from "react-native";
+import { palette } from "../../assets/palette";
 /* 
 {
     "beer": {
@@ -154,10 +155,11 @@ function BeerPage() {
 
   return (
     <ScrollView>
+      <View style={styles.scroll}>
       <View style={styles.header}>
         <Button
           type="clear"
-          icon={{ name: "arrow-back", color: "black" }}
+          icon={{ name: "arrow-back", color: "white" }}
           onPress={() => {
             router.navigate(`/home/${userId}`);
           }}
@@ -169,24 +171,25 @@ function BeerPage() {
         {!loading && !errorMessage && beer && userId && beer_id && (
           <>
             <Text style={styles.tilte1}>{beer.name}</Text>
-            <Text>{beer.style}</Text>
-            <Text>{beer.avg_rating}</Text>
-            <Text>{beer.hop}</Text>
-            <Text>{beer.yeast}</Text>
-            <Text>{beer.malts}</Text>
-            <Text>{beer.ibu}</Text>
-            <Text>{beer.alcohol}</Text>
-            <Text>{beer.blg}</Text>
+            <Text style={styles.bodyText}>{beer.style}</Text>
+            <Text style={styles.bodyText}>{beer.avg_rating}</Text>
+            <Text style={styles.bodyText}>{beer.hop}</Text>
+            <Text style={styles.bodyText}>{beer.yeast}</Text>
+            <Text style={styles.bodyText}>{beer.malts}</Text>
+            <Text style={styles.bodyText}>{beer.ibu}</Text>
+            <Text style={styles.bodyText}>{beer.alcohol}</Text>
+            <Text style={styles.bodyText}>{beer.blg}</Text>
             <Text style={styles.tilte2}>Find it in</Text>
             {beerInfo?.bars_beer.map((bar) => (
-              <Text key={bar.id}>{bar.name}</Text>
+              <Text style={styles.bodyText} key={bar.id}>{bar.name}</Text>
             ))}
-            {beerInfo?.bars_beer.length === 0 && <Text>No bars found</Text>}
+            {beerInfo?.bars_beer.length === 0 && <Text style={styles.bodyText}>No bars found</Text>}
             <Text style={styles.tilte2}>Produced by</Text>
-            <Text>{beerInfo?.brewery.name}</Text>
+            <Text style={styles.bodyText}>{beerInfo?.brewery.name}</Text>
             <ReviewList user_id={userId} beer_id={beer_id} />
           </>
         )}
+      </View>
       </View>
     </ScrollView>
   );
@@ -199,20 +202,27 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    backgroundColor: "#f0f0f0",
     padding: 10,
   },
   tilte1: {
-    fontSize: 20,
+    fontSize: 32,
     fontWeight: "bold",
     marginBottom: 10,
+    color:palette.lager,
   },
   tilte2: {
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10,
-    marginTop: 10,
+    marginTop: 20,
+    color:palette.lager,
   },
+  bodyText:{
+    color:"white"
+  },
+  scroll:{
+    backgroundColor: palette.background,
+  }
 });
 
 export default BeerPage;
