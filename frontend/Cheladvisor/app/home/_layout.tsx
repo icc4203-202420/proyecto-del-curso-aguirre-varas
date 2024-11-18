@@ -72,7 +72,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: palette.components,
     paddingHorizontal: 10,
-    paddingVertical: 5,
   },
   buttonContainer: {
     marginRight: 10,
