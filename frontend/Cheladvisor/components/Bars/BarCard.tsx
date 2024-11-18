@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Card } from "react-native-elements";
-import { Text, TouchableOpacity, View } from "react-native";
+import { Text, TouchableOpacity, View, StyleSheet } from "react-native";
 
 interface Bar {
   id: number;
@@ -23,7 +23,7 @@ const BarCard: React.FC<BarCardProps> = ({ item }) => {
   return (
     <TouchableOpacity onPress={toggleExpand}>
       <Card>
-        <Card.Title>{item.name}</Card.Title>
+        <Card.Title style={styles.title}>{item.name}</Card.Title>
         <Card.Divider />
         {expanded && (
           <View style={{ marginTop: 10 }}>
@@ -35,5 +35,12 @@ const BarCard: React.FC<BarCardProps> = ({ item }) => {
     </TouchableOpacity>
   );
 };
+
+const styles = StyleSheet.create({
+  title: {
+    fontSize: 24, // Tamaño de fuente más grande para el nombre
+    fontWeight: "bold", // Negrita para destacar
+  },
+});
 
 export default BarCard;

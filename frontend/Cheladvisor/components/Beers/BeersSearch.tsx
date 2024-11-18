@@ -118,11 +118,13 @@ const Beers: React.FC<BeersProps> = ({ searchQuery }) => {
         <FlatList
           data={filteredBeers}
           keyExtractor={(item) => item.id.toString()}
+          
           renderItem={({ item }) => (
             <View>
               <TouchableOpacity onPress={() => handleBeerClick(item.id)}>
                 <Card containerStyle={{ padding: 10 }}>
                   <Card.Title
+                    style={{ marginBottom: 10, fontSize:20 }}
                     onPress={() => {
                       router.replace(`/beers/${item.id}`);
                     }}

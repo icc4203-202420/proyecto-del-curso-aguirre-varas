@@ -12,6 +12,7 @@ import { useRouter, useLocalSearchParams } from "expo-router";
 import { Button } from "react-native-elements";
 import axios from "axios";
 import { deleteItem } from "../../util/Storage";
+import { fetchEventPictures } from "../../services/event_pictures/eventPictures"; // Asegúrate de tener la función aquí
 
 const palette = {
   background: "#210F04",
@@ -41,65 +42,135 @@ const Home = () => {
     }
   };
 
-  const getBeerName = async (beer_id) => {
+  const fetchUserData = async (id) => {
     try {
-      const response = await axios.get(`http://127.0.0.1:3001/api/v1/beers/${beer_id}`);
-      return response.data.name;
+      const response = await axios.get(`http://localhost:3001/api/v1/users/${id}`);
+      setUserData(response.data);
+    } catch (error) {
+      handleFetchError(error, "Error al obtener los datos del usuario");
+    }
+  };
+  useEffect(() => {
+    console.log("Reviews data:", reviews);
+    console.log("Events data:", events);
+  }, [reviews, events]);
+  const fetchReviews = async () => {
+    try {
+      const response = await axios.get("http://localhost:3001/api/v1/reviews");
+      console.log("Reviews response:", response.data); // Agregar log
+      const latestReviews = (response.data.reviews || []).slice(0, 10);
+  
+      const reviewsWithBeerNames = await Promise.all(
+        latestReviews.map(async (review) => ({
+          ...review,
+          beerName: await fetchBeerName(review.beer_id),
+        }))
+      );
+  
+      setReviews(reviewsWithBeerNames);
+    } catch (error) {
+      console.error("Error al obtener las reseñas", error);
+    }
+  };
+  
+
+  const fetchBeerName = async (beer_id) => {
+    try {
+      const response = await axios.get(`http://localhost:3001/api/v1/beers/${beer_id}`);
+      return response.data.name || "Unknown Beer";
     } catch (error) {
       console.error("Error al obtener el nombre de la cerveza", error);
       return "Unknown Beer";
     }
   };
 
-  const getEvents = async () => {
+  const fetchEvents = async () => {
     try {
-      const response = await axios.get("http://127.0.0.1:3001/api/v1/events");
+      const response = await axios.get("http://localhost:3001/api/v1/events");
       const filteredEvents = response.data.events.filter((event) =>
-        [1, 2, 3, 4].includes(event.id)
+        [1, 2, 3, 4, 5, 6].includes(event.id)
       );
-      setEvents(filteredEvents);
+
+      const eventsWithPictures = await Promise.all(
+        filteredEvents.map(async (event) => {
+          const eventPictures = await fetchEventPictures(event.id);
+          return { ...event, pictures: eventPictures };
+        })
+      );
+
+      setEvents(eventsWithPictures);
     } catch (error) {
       console.error("Error al obtener los eventos", error);
     }
   };
 
+  const handleFetchError = async (error, message) => {
+    await deleteItem("userId");
+    await deleteItem("token");
+    setErrorMessage(error.response ? message : "Error de conexión");
+    router.push("/");
+  };
+
   useEffect(() => {
-    const initData = async () => {
+    const initializeData = async () => {
       try {
-        const userResponse = await axios.get(`http://127.0.0.1:3001/api/v1/users/${user_id}`);
-        setUserData(userResponse.data);
-
-        const reviewResponse = await axios.get("http://127.0.0.1:3001/api/v1/reviews");
-        const allReviews = Array.isArray(reviewResponse.data.reviews) ? reviewResponse.data.reviews : [];
-        const latestReviews = allReviews.slice(0, 10);
-
-        const reviewsWithBeerNames = await Promise.all(
-          latestReviews.map(async (review) => {
-            const beerName = await getBeerName(review.beer_id);
-            return { ...review, beerName };
-          })
-        );
-
-        setReviews(reviewsWithBeerNames);
-        await getEvents();
+        await fetchUserData(user_id);
+        await fetchReviews();
+        await fetchEvents();
       } catch (error) {
-        if (error.response) {
-          await deleteItem("userId");
-          await deleteItem("token");
-          router.push("/");
-          setErrorMessage("Error al obtener los datos del usuario");
-        } else {
-          await deleteItem("userId");
-          await deleteItem("token");
-          setErrorMessage("Error de conexión");
-        }
+        console.error("Error al inicializar datos", error);
       } finally {
         setLoading(false);
       }
     };
 
-    initData();
+    initializeData();
   }, [user_id]);
+
+  const renderStars = (rating) => {
+    const stars = [...Array(5)].map((_, index) => (
+      <Text key={index} style={styles.star}>
+        {index < Math.floor(rating) ? "★" : "☆"}
+      </Text>
+    ));
+    return <View style={styles.starsContainer}>{stars}</View>;
+  };
+
+  const renderReviewItem = ({ item }) => (
+    <View style={styles.reviewContainer}>
+      <Text style={styles.beerName}>{item.beerName}</Text>
+      <Text style={styles.reviewText}>{item.text}</Text>
+      {renderStars(item.rating)}
+      <Text style={styles.userHandle}>- {item.user_handle}</Text>
+    </View>
+  );
+
+  const renderEventItem = ({ item }) => (
+    <View style={styles.eventContainer}>
+      {item.pictures && item.pictures.length > 0 ? (
+        <Image
+          source={{ uri: item.pictures[0].image_url }} // Mostramos la primera imagen del evento
+          style={styles.eventImage}
+        />
+      ) : (
+        <View style={styles.placeholderContainer}>
+          <Text style={styles.placeholderText}>No Image</Text>
+        </View>
+      )}
+      <Text style={styles.eventTitle}>{item.title}</Text>
+  
+      {/* Mostrar el nombre del usuario que subió la imagen y a qué evento pertenece */}
+      {item.pictures[0]?.uploaded_by && (
+        <Text style={styles.uploadedByText}>
+          Uploaded by: {item.pictures[0].uploaded_by}
+        </Text>
+      )}
+      <Text style={styles.eventTitle}>
+        Event: MyString {item.title}
+      </Text>
+    </View>
+  );
+  
 
   if (loading) {
     return <ActivityIndicator size="large" color={palette.clear} />;
@@ -108,67 +179,17 @@ const Home = () => {
   if (errorMessage) {
     return (
       <View style={styles.container}>
-        <Text style={styles.error}>{errorMessage || "Error desconocido"}</Text>
+        <Text style={styles.error}>{errorMessage}</Text>
       </View>
     );
   }
 
-  const renderStars = (rating) => {
-    const fullStars = Math.floor(rating);
-    const halfStars = rating % 1 >= 0.5 ? 1 : 0;
-    const emptyStars = 5 - fullStars - halfStars;
-
-    return (
-      <View style={styles.starsContainer}>
-        {[...Array(fullStars)].map((_, index) => (
-          <Text key={index} style={styles.star}>★</Text>
-        ))}
-        {halfStars > 0 && <Text style={styles.star}>☆</Text>}
-        {[...Array(emptyStars)].map((_, index) => (
-          <Text key={index} style={styles.star}>☆</Text>
-        ))}
-      </View>
-    );
-  };
-
-  const renderReviewItem = ({ item }) => (
-    <View style={styles.reviewContainer}>
-      <Text style={styles.beerName}>{item.beerName}</Text>
-      <Text style={styles.reviewText}>{item.text}</Text>
-      {renderStars(parseFloat(item.rating))}
-      <Text style={styles.userHandle}>- {item.user_handle}</Text>
-    </View>
-  );
-
-  const renderEventItem = ({ item }) => (
-    <View style={styles.eventContainer}>
-      {item.image_url ? (
-        <Image
-          source={{ uri: item.image_url }}
-          style={styles.eventImage}
-          resizeMode="cover"
-        />
-      ) : (
-        <View style={styles.placeholderContainer}>
-          <Text style={styles.placeholderText}>No Image</Text>
-        </View>
-      )}
-      <Text style={styles.eventTitle}>{item.title}</Text>
-    </View>
-  );
-
   return (
     <ScrollView style={styles.container}>
       <View style={styles.logoutContainer}>
-        <Button
-          title="Log Out"
-          onPress={handleLogOut}
-          buttonStyle={styles.logoutButton}
-        />
+        <Button title="Log Out" onPress={handleLogOut} buttonStyle={styles.logoutButton} />
       </View>
-
       <Text style={styles.welcomeText}>Welcome {userData?.handle || "User"}!</Text>
-
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>News from Friends</Text>
         <FlatList
@@ -177,10 +198,8 @@ const Home = () => {
           keyExtractor={(item) => item.id.toString()}
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.reviewsContainer}
         />
       </View>
-
       <View style={styles.sectionContainer}>
         <Text style={styles.sectionTitle}>Feed</Text>
         <FlatList
@@ -189,14 +208,11 @@ const Home = () => {
           keyExtractor={(item) => item.id.toString()}
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.eventsContainer}
         />
       </View>
     </ScrollView>
   );
 };
-
-
 
 const styles = StyleSheet.create({
   container: {
@@ -234,9 +250,6 @@ const styles = StyleSheet.create({
     backgroundColor: palette.amber,
     width: 120,
   },
-  reviewsContainer: {
-    paddingHorizontal: 10,
-  },
   reviewContainer: {
     backgroundColor: palette.components,
     marginRight: 20,
@@ -266,10 +279,6 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
     color: "#fff",
   },
-  eventsContainer: {
-    paddingHorizontal: 10,
-  },
- 
   eventContainer: {
     backgroundColor: palette.components,
     marginRight: 20,
@@ -279,29 +288,32 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   eventImage: {
-    width: 150,
+    width: "100%",
     height: 100,
     borderRadius: 10,
-    backgroundColor: "#333", // Color de fondo mientras se carga la imagen
   },
   placeholderContainer: {
-    width: 150,
+    width: "100%",
     height: 100,
-    borderRadius: 10,
-    backgroundColor: "#666", // Fondo del marcador de posición
+    backgroundColor: "#ccc",
     justifyContent: "center",
     alignItems: "center",
+    borderRadius: 10,
   },
   placeholderText: {
     color: "#fff",
-    fontSize: 12,
+    fontWeight: "bold",
+  },
+  uploadedByText: {
+    fontSize: 14,
+    color: "#fff",
+    marginTop: 5,
+    fontStyle: "italic",
   },
   eventTitle: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "#fff",
     marginTop: 10,
-    textAlign: "center",
+    fontSize: 16,
+    color: "#fff",
   },
 });
 

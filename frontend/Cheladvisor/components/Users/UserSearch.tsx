@@ -4,8 +4,8 @@ import {
   Text,
   FlatList,
   TouchableOpacity,
-  TextInput,
   Button,
+  StyleSheet,
 } from "react-native";
 import { Card } from "react-native-elements";
 
@@ -15,7 +15,6 @@ import {
   fetchFriendships,
   createFriendship,
 } from "../../services/friendships/friendships";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 type User = {
   id: number;
@@ -73,6 +72,7 @@ function Users({ searchQuery }: { searchQuery: string }) {
       console.error("Error adding friend:", error);
     }
   };
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -90,13 +90,8 @@ function Users({ searchQuery }: { searchQuery: string }) {
 
         const usersResponse = await fetchUsers();
         setUsers(usersResponse);
-        console.log(fetchedUserId, fetchedToken);
 
-        const friendsResponse = await fetchFriendships(
-          fetchedUserId,
-          fetchedToken
-        );
-        console.log(friendsResponse);
+        const friendsResponse = await fetchFriendships(fetchedUserId, fetchedToken);
         setFriends(friendsResponse);
       } catch (error) {
         setErrorMessage("An error occurred while fetching data.");
@@ -112,7 +107,7 @@ function Users({ searchQuery }: { searchQuery: string }) {
   const fileteredUsers = filterUsers(users, searchQuery);
 
   return (
-    <View>
+    <View style={styles.container}>
       {loading ? (
         <Text>Loading...</Text>
       ) : errorMessage ? (
@@ -128,7 +123,7 @@ function Users({ searchQuery }: { searchQuery: string }) {
                   setExpandedUserId(expandedUserId === item.id ? null : item.id)
                 }
               >
-                <Text>
+                <Text style={styles.userName}>
                   {item.first_name} {item.last_name}
                 </Text>
                 {expandedUserId === item.id && (
@@ -139,11 +134,12 @@ function Users({ searchQuery }: { searchQuery: string }) {
                       <Text>Age: {item.age}</Text>
                     </View>
                     {friends.some((friend) => friend.friend_id === item.id) ? (
-                      <Text>Friend</Text>
+                      <Text style={styles.buttonText}>Friend</Text>
                     ) : (
                       <Button
-                        title="Add friend"
+                        title="Add Friend"
                         onPress={() => addFriend(item.id, token, 1)}
+                        color="#8B0000" // Dark red color
                       />
                     )}
                   </>
@@ -156,5 +152,21 @@ function Users({ searchQuery }: { searchQuery: string }) {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 10,
+  },
+  userName: {
+    fontSize: 24, // Larger font size for the name and surname
+    fontWeight: "bold",
+    marginBottom: 10,
+  },
+  buttonText: {
+    fontSize: 18,
+    color: "#008B00", // Dark red color for the 'Add Friend' text
+  },
+});
 
 export default Users;
