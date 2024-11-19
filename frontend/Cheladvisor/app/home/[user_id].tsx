@@ -7,12 +7,15 @@ import {
   ScrollView,
   FlatList,
   Image,
+  TouchableOpacity,
 } from "react-native";
 import { useRouter, useLocalSearchParams } from "expo-router";
 import { Button } from "react-native-elements";
 import axios from "axios";
 import { deleteItem } from "../../util/Storage";
 import { fetchEventPictures } from "../../services/event_pictures/eventPictures"; // Asegúrate de tener la función aquí
+import DropDownPicker from "react-native-dropdown-picker";
+
 
 const palette = {
   background: "#210F04",
@@ -50,6 +53,8 @@ const Home = () => {
       handleFetchError(error, "Error al obtener los datos del usuario");
     }
   };
+
+  
   useEffect(() => {
     console.log("Reviews data:", reviews);
     console.log("Events data:", events);
@@ -136,6 +141,10 @@ const Home = () => {
     return <View style={styles.starsContainer}>{stars}</View>;
   };
 
+
+  const [isDropdownOpen, setDropdownOpen] = useState(false);
+  const [selectedValue, setSelectedValue] = useState(null);
+
   const renderReviewItem = ({ item }) => (
     <View style={styles.reviewContainer}>
       <Text style={styles.beerName}>{item.beerName}</Text>
@@ -183,6 +192,7 @@ const Home = () => {
       </View>
     );
   }
+  
 
   return (
     <ScrollView style={styles.container}>
@@ -191,7 +201,24 @@ const Home = () => {
       </View>
       <Text style={styles.welcomeText}>Welcome {userData?.handle || "User"}!</Text>
       <View style={styles.sectionContainer}>
-        <Text style={styles.sectionTitle}>News from Friends</Text>
+        <View style={styles.up}>
+          <Text style={styles.sectionTitle}>Reviews</Text>
+          <DropDownPicker
+            open={isDropdownOpen}
+            value={selectedValue}
+            items={[
+              { label: "Amistad", value: "friend" },
+              { label: "Bar", value: "bar" },
+              { label: "País", value: "country" },
+              { label: "Cerveza", value: "beer" },
+            ]}
+            setOpen={setDropdownOpen}
+            setValue={setSelectedValue}
+            placeholder="Filtrar por..."
+            style={styles.dropdown}
+          />
+        </View>
+
         <FlatList
           data={reviews}
           renderItem={renderReviewItem}
@@ -314,6 +341,25 @@ const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     color: "#fff",
+  },
+  up:{
+    flexDirection: "row",
+    justifyContent:"space-between",
+    alignItems:"center",
+    zIndex:1000
+  },
+  dropdown: {
+    height: 40,
+    backgroundColor: palette.lager,
+    borderColor: palette.amber,
+    width:"50%",
+    alignSelf:"center",
+    marginBottom: 20,
+  },
+  dropdownList: {
+    backgroundColor: "#fafafa",
+    width:40,
+    alignSelf:"center",
   },
 });
 
