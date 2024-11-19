@@ -3,36 +3,29 @@ class API::V1::EventsController < ApplicationController
   include Authenticable
 
   respond_to :json
-  before_action :set_event, only: [:show, :update, :destroy]
-  before_action :verify_jwt_token, only: [:create, :update, :destroy]
+  before_action :set_event, only: [:show, :update, :destroy, :generate_summary]
+  before_action :verify_jwt_token, only: [:create, :update, :destroy, :generate_summary]
 
   def index
-    if params[:bar_id]
-      @events = Event.where(bar_id: params[:bar_id])
-    else
-      @events = Event.all
+    @events = params[:bar_id] ? Event.where(bar_id: params[:bar_id]) : Event.all
+
+    json_response = @events.map do |event|
+      event_data = event.as_json
+      event_data[:image_url] = url_for(event.flyer) if event.flyer.attached?
+      event_data
     end
-    json_response = []
-    for event in @events
-      if event.flyer.attached?
-        json_event = event.as_json.merge({ 
-          image_url: url_for(event.flyer)})
-      else
-        json_event =   event.as_json
-      end
-      json_response.push(json_event)
-    end
+
     render json: { events: json_response }, status: :ok
   end
 
   def show
-    if @event.flyer.attached?
-      render json: @event.as_json.merge({ 
-        image_url: url_for(@event.flyer)}),
-        status: :ok
-    else
-      render json: { event: @event.as_json }, status: :ok
-    end
+    event_data = @event.as_json
+
+    event_data[:image_url] = url_for(@event.flyer) if @event.flyer.attached?
+
+    event_data[:video_url] = url_for(@event.video) if @event.video.attached?
+
+    render json: { event: event_data }, status: :ok
   end
 
   def create
@@ -40,7 +33,7 @@ class API::V1::EventsController < ApplicationController
     handle_image_attachment if event_params[:image_base64]
 
     if @event.save
-      render json: { event: @event, message: 'event created successfully.' }, status: :ok
+      render json: { event: @event, message: 'Event created successfully.' }, status: :ok
     else
       render json: @event.errors, status: :unprocessable_entity
     end
@@ -50,7 +43,7 @@ class API::V1::EventsController < ApplicationController
     handle_image_attachment if event_params[:image_base64]
 
     if @event.update(event_params.except(:image_base64))
-      render json: { event: @event, message: 'event updated successfully.' }, status: :ok
+      render json: { event: @event, message: 'Event updated successfully.' }, status: :ok
     else
       render json: @event.errors, status: :unprocessable_entity
     end
@@ -58,12 +51,17 @@ class API::V1::EventsController < ApplicationController
 
   def destroy
     if @event.destroy
-      render json: { message: 'event successfully deleted.' }, status: :no_content
+      render json: { message: 'Event successfully deleted.' }, status: :no_content
     else
       render json: @event.errors, status: :unprocessable_entity
     end
   end  
 
+  def generate_summary
+    GenerateEventSummaryVideoJob.perform_later(@event.id)
+    
+    render json: { message: "El video está siendo generado en segundo plano. Se actualizará cuando esté listo." }, status: :accepted
+  end
   private
 
   def set_event

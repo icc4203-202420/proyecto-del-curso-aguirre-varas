@@ -1,11 +1,12 @@
 {
   "expo": {
-    "name": "hybrid-frontend",
-    "slug": "hybrid-frontend",
+    "name": "Cheladvisor",
+    "slug": "Cheladvisor",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
+    "scheme": "Cheladvisor",
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
@@ -22,6 +23,7 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": ["expo-router"]
   }
 }
